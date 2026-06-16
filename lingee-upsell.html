@@ -394,7 +394,36 @@ body{
 .copy-btn:hover{background:#FFF7ED}
 .bank-note{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.75;padding:10px 13px;background:#FFFBEB;border-radius:10px;border:1px solid #FDE68A}
 
-/* ── STEP 3 STATES ── */
+/* ── STATE PAGES (overseas style) ── */
+.state-narrow{max-width:560px;margin-left:auto;margin-right:auto}
+.state-card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 2px 14px rgba(99,102,241,.06);overflow:hidden}
+.hero{text-align:center;padding:26px 20px}
+.hero .ic{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;color:#fff}
+.hero .ic.green{background:var(--green)}
+.hero .ic.indigo{background:var(--indigo)}
+.hero .ic.amber{background:var(--amber)}
+.hero .ic.red{background:var(--red)}
+.hero .ic.gray{background:#94A3B8}
+.hero h2{font-size:19px;font-weight:800;margin-bottom:6px;color:var(--ink)}
+.hero p{font-size:13px;color:var(--muted);max-width:440px;margin:0 auto;line-height:1.7}
+.kv{max-width:460px;margin:0 auto;padding:0 20px 22px}
+.kv .row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F1F2F7;font-size:13px;gap:12px}
+.kv .row:last-child{border-bottom:none}
+.kv .row .l{color:var(--muted);flex-shrink:0}
+.kv .row .r{font-weight:600;color:var(--ink);text-align:right}
+.kv .row .r.hl{color:var(--indigo)}
+.kv .row .r.amber{color:var(--amber)}
+.kv .row .r.red{color:var(--red)}
+.kv .row .r .arrow{color:#94A3B8;font-weight:400;margin:0 4px}
+.kv .row .r .new{color:var(--green);font-weight:700}
+.alert-block{padding:12px 15px;border-radius:10px;font-size:12.5px;line-height:1.65;margin:14px 0}
+.alert-block b{font-weight:700}
+.alert-info{background:#EEF2FF;border:1px solid #C7D2FE;color:#3730A3}
+.alert-warn{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E}
+.alert-ok{background:#F0FDF4;border:1px solid #BBF7D0;color:#166534}
+.btn-row{display:flex;gap:12px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin-icon{animation:spin 1s linear infinite}
 .state-page{max-width:520px;margin:0 auto;text-align:center;padding:40px 0}
 .state-icon{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:26px;color:#fff}
 .state-icon.processing{background:var(--indigo);animation:pulse 1.2s infinite}
@@ -511,11 +540,11 @@ body{
           <div class="status-item-value">10 席</div>
         </div>
         <div class="status-item">
-          <div class="status-item-label">赠送点余额</div>
+          <div class="status-item-label">赠送点数余额</div>
           <div class="status-item-value">3,200 <span>/ 5,000 本月</span></div>
         </div>
         <div class="status-item">
-          <div class="status-item-label">增购点余额</div>
+          <div class="status-item-label">增购点数余额</div>
           <div class="status-item-value">35,000 <span>点 · 合同期内</span></div>
         </div>
         <div class="status-item">
@@ -783,7 +812,7 @@ body{
           <div class="pay-panel active" id="panel-alipay" >
             <div class="qr-area">
               <!-- 二维码占位 -->
-              <div class="qr-box" id="qr-box" style="width:180px;height:180px;background:#fff;border:none;border-radius:8px;padding:8px">
+              <div class="qr-box" id="qr-box" style="width:197px;height:197px;background:#fff;border:none;border-radius:8px;padding:8px">
                 <svg width="160" height="160" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width=".6">
                   <rect x="2" y="2" width="8" height="8" rx=".8"/>
                   <rect x="14" y="2" width="8" height="8" rx=".8"/>
@@ -841,7 +870,7 @@ body{
               </div>
             </div>
             <div style="font-size:11.5px;color:var(--muted);height:20px;text-align:center"></div>
-            <button class="btn btn-primary btn-full" id="btn-bank-done" onclick="goPage('step4c')">
+            <button class="btn btn-primary btn-full" id="btn-bank-done" onclick="goPage('review')">
               我已转账，提交确认
             </button>
           </div>
@@ -884,116 +913,182 @@ body{
 <div class="page" id="page-step4">
   <div class="container">
 
-    <!-- 4A Processing -->
-    <div id="state-3a" style="display:none">
-      <div class="state-page">
-        <div class="state-icon processing"><div class="spinner"></div></div>
-        <div class="state-title">正在为您开通增购权益…</div>
-        <div class="state-desc">
-          <p>支付已确认，席位和点数正在激活</p>
-          <p>通常在 1 分钟内完成</p>
+    <!-- 4A 订单待支付 -->
+    <div id="state-pending" style="display:none" class="state-narrow">
+      <div class="state-card">
+        <div class="hero">
+          <div class="ic amber">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 7 12 12 15 14"/></svg>
+          </div>
+          <h2>订单待支付</h2>
+          <p>订单已生成，<b>14 天内</b>完成支付即可激活权益。未支付到期将自动取消。</p>
         </div>
-        <div class="order-block">
-          <div class="order-block-title">订单信息</div>
-          <div class="order-row"><span class="order-row-key">订单号</span><span class="order-row-val">LG-CN-20260615-EXP-001</span></div>
-          <div class="order-row"><span class="order-row-key">下单时间</span><span class="order-row-val">2026-06-15 14:30（GMT+8）</span></div>
-          <div class="order-row"><span class="order-row-key">增购内容</span><span class="order-row-val" id="processing-content">—</span></div>
-          <div class="order-row"><span class="order-row-key">合计</span><span class="order-row-val" id="processing-total">—</span></div>
+        <div class="kv">
+          <div class="row"><span class="l">订单号</span><span class="r" id="pending-order-num">—</span></div>
+          <div class="row"><span class="l">下单时间</span><span class="r" id="pending-order-time">—</span></div>
+          <div class="row"><span class="l">增购内容</span><span class="r hl" id="pending-content">—</span></div>
+          <div class="row" id="pending-gift-row" style="display:none"><span class="l">赠送点数</span><span class="r" id="pending-gift">—</span></div>
+          <div class="row"><span class="l">应付金额</span><span class="r" id="pending-total">—</span></div>
+          <div class="row"><span class="l">订单有效期至</span><span class="r" id="pending-expire">—</span></div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="goStep(3)">继续支付</button>
+        <button class="btn btn-outline" onclick="goStep(1)">返回修改</button>
+        <button class="btn btn-outline" style="color:var(--red);border-color:#F3C4C4" onclick="if(confirm('确认取消订单？取消后无法恢复，需要重新下单。')){showState('cancelled');}">取消订单</button>
+      </div>
+    </div>
+
+    <!-- 4B 支付失败 -->
+    <div id="state-failed" style="display:none" class="state-narrow">
+      <div class="state-card">
+        <div class="hero">
+          <div class="ic red">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </div>
+          <h2>支付失败</h2>
+          <p>未产生扣款，请重新支付或更换支付方式。订单保留 14 天，未支付到期将自动取消。</p>
+        </div>
+        <div class="kv">
+          <div class="row"><span class="l">订单号</span><span class="r" id="failed-order-num">—</span></div>
+          <div class="row"><span class="l">下单时间</span><span class="r" id="failed-order-time">—</span></div>
+          <div class="row"><span class="l">增购内容</span><span class="r hl" id="failed-content">—</span></div>
+          <div class="row" id="failed-gift-row" style="display:none"><span class="l">赠送点数</span><span class="r" id="failed-gift">—</span></div>
+          <div class="row"><span class="l">应付金额</span><span class="r" id="failed-total">—</span></div>
+          <div class="row"><span class="l">失败原因</span><span class="r red">支付宝交易超时</span></div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="goStep(3)">重新支付</button>
+        <button class="btn btn-outline" onclick="openContact()">联系客服</button>
+      </div>
+    </div>
+
+    <!-- 4C 等待对账确认（对公转账专用） -->
+    <div id="state-review" style="display:none" class="state-narrow">
+      <div class="state-card">
+        <div class="hero">
+          <div class="ic indigo">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 7 12 12 15 14"/></svg>
+          </div>
+          <h2>等待对账确认</h2>
+          <p>已收到您的转账通知，正在核对银行流水。通常 1–3 个工作日完成对账，对账通过后立即开通席位和点数。</p>
+        </div>
+        <div class="kv">
+          <div class="row"><span class="l">订单号</span><span class="r" id="review-order-num">—</span></div>
+          <div class="row"><span class="l">下单时间</span><span class="r" id="review-order-time">—</span></div>
+          <div class="row"><span class="l">增购内容</span><span class="r hl" id="review-content">—</span></div>
+          <div class="row" id="review-gift-row" style="display:none"><span class="l">赠送点数</span><span class="r" id="review-gift">—</span></div>
+          <div class="row"><span class="l">应付金额</span><span class="r" id="review-total">—</span></div>
+          <div class="row"><span class="l">支付方式</span><span class="r">对公银行转账</span></div>
+          <div class="row"><span class="l">状态</span><span class="r amber">● 等待对账</span></div>
+        </div>
+      </div>
+      <div class="alert-block alert-info">无需您操作，对账完成后将自动激活权益，并通知 <b>zhangming@xinchen.com</b>。</div>
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="copyOrderNum()">复制订单号</button>
+        <button class="btn btn-outline" onclick="openContact()">联系客服</button>
+      </div>
+    </div>
+
+    <!-- 4D 权益激活中 -->
+    <div id="state-provisioning" style="display:none" class="state-narrow">
+      <div class="state-card">
+        <div class="hero">
+          <div class="ic indigo">
+            <svg class="spin-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.2-8.6"/></svg>
+          </div>
+          <h2>正在为您开通权益…</h2>
+          <p>支付已确认，新席位和点数正在激活。通常 1 分钟内完成，无需您操作。</p>
+        </div>
+        <div class="kv">
+          <div class="row"><span class="l">订单号</span><span class="r" id="provisioning-order-num">—</span></div>
+          <div class="row"><span class="l">下单时间</span><span class="r" id="provisioning-order-time">—</span></div>
+          <div class="row"><span class="l">增购内容</span><span class="r hl" id="provisioning-content">—</span></div>
+          <div class="row" id="provisioning-gift-row" style="display:none"><span class="l">赠送点数</span><span class="r" id="provisioning-gift">—</span></div>
+          <div class="row"><span class="l">已支付</span><span class="r" id="provisioning-total">—</span></div>
+          <div class="row"><span class="l">状态</span><span class="r hl">● 开通中</span></div>
         </div>
       </div>
     </div>
 
-    <!-- 3B Success -->
-    <div id="state-3b" style="display:none">
-      <div class="state-page">
-        <div class="state-icon success">✅</div>
-        <div class="state-title">增购成功</div>
-        <div class="state-desc">
-          <p>新席位已激活，可立即在席位管理中分配</p>
-          <p id="success-points-desc">100,000 点已到账，可在点数管理中查看</p>
-        </div>
-        <div class="order-block">
-          <div class="order-block-title">订单信息</div>
-          <div class="order-row"><span class="order-row-key">订单号</span><span class="order-row-val">LG-CN-20260615-EXP-001</span></div>
-          <div class="order-row"><span class="order-row-key">下单时间</span><span class="order-row-val">2026-06-15 14:30（GMT+8）</span></div>
-          <div class="order-row"><span class="order-row-key">增购内容</span><span class="order-row-val" id="success-content">—</span></div>
-          <div class="order-row">
-            <span class="order-row-key">席位</span>
-            <span class="order-row-val" id="success-seats">10席 <span class="arrow">→</span> <span class="new">13席</span>（有效至 2027-06-15）</span>
+    <!-- 4E 权益激活成功 -->
+    <div id="state-success" style="display:none" class="state-narrow">
+      <div class="state-card">
+        <div class="hero">
+          <div class="ic green">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
-          <div class="order-row" id="success-points-row">
-            <span class="order-row-key">点数</span>
-            <span class="order-row-val">38,200 点 <span class="arrow">→</span> <span class="new" id="success-points-new">138,200 点</span>（本月剩余）</span>
-          </div>
-          <div class="order-row"><span class="order-row-key">支付</span><span class="order-row-val" id="success-total">¥2,297.00（含税）</span></div>
-          <div class="order-row"><span class="order-row-key">支付方式</span><span class="order-row-val">企业支付宝</span></div>
+          <h2>增购成功，权益已激活</h2>
+          <p>增购席位与点数已激活，可立即在灵基产品中分配使用。</p>
         </div>
-        <div class="state-actions">
-          <div class="state-actions-row">
-            <button class="btn btn-primary" style="height:40px;padding:0 20px">前往席位管理</button>
-            <button class="btn btn-outline" style="height:40px;padding:0 20px">查看点数</button>
-          </div>
-          <a href="#" class="text-link">查看订单详情 →</a>
+        <div class="kv">
+          <div class="row"><span class="l">订单号</span><span class="r" id="success-order-num">—</span></div>
+          <div class="row"><span class="l">下单时间</span><span class="r" id="success-order-time">—</span></div>
+          <div class="row"><span class="l">增购内容</span><span class="r hl" id="success-content">—</span></div>
+          <div class="row" id="success-gift-row" style="display:none"><span class="l">赠送点数</span><span class="r" id="success-gift">—</span></div>
+          <div class="row"><span class="l">服务期</span><span class="r">至 2027-06-15</span></div>
+          <div class="row"><span class="l">已支付</span><span class="r" id="success-total">—</span></div>
+          <div class="row"><span class="l">支付方式</span><span class="r" id="success-pay-method">企业支付宝</span></div>
         </div>
+      </div>
+      <div class="alert-block alert-info">您可在管理后台中查看权益详情，并申请开具增值税发票。</div>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="javascript:void(0)">前往灵基</a>
       </div>
     </div>
 
-    <!-- 3C Pending bank -->
-    <div id="state-3c" style="display:none">
-      <div class="state-page">
-        <div class="state-icon pending">🕒</div>
-        <div class="state-title">付款信息待确认</div>
-        <div class="state-desc">
-          <p>我们已收到您的转账通知，正在等待银行流水回传</p>
-          <p>通常 1–3 个工作日内完成确认，确认后席位和点数立即激活</p>
-        </div>
-        <div class="order-block">
-          <div class="order-block-title">订单信息</div>
-          <div class="order-row"><span class="order-row-key">订单号</span><span class="order-row-val">LG-CN-20260615-EXP-001</span></div>
-          <div class="order-row"><span class="order-row-key">下单时间</span><span class="order-row-val">2026-06-15 14:30（GMT+8）</span></div>
-          <div class="order-row"><span class="order-row-key">增购内容</span><span class="order-row-val" id="pending-content">—</span></div>
-          <div class="order-row"><span class="order-row-key">合计</span><span class="order-row-val" id="pending-total">—</span></div>
-          <div class="order-row"><span class="order-row-key">支付方式</span><span class="order-row-val">对公银行转账</span></div>
-        </div>
-        <div class="state-actions">
-          <div class="state-actions-row">
-            <button class="btn btn-ghost" style="height:38px" onclick="copyText('LG-CN-20260615-EXP-001')">复制订单号</button>
-            <button class="btn btn-outline" style="height:38px">联系客服</button>
+    <!-- 4F 权益激活失败 -->
+    <div id="state-actfail" style="display:none" class="state-narrow">
+      <div class="state-card">
+        <div class="hero">
+          <div class="ic red">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10" stroke-width="2"/><line x1="12" y1="8" x2="12" y2="13"/><circle cx="12" cy="16.5" r="1" fill="#fff" stroke="none"/></svg>
           </div>
+          <h2>权益激活遇到问题</h2>
+          <p>支付已成功，但席位和点数开通失败。我们已收到告警，将尽快为您完成激活，或全额退款到原支付账户。</p>
         </div>
-        <div class="state-receipt">
-          如超过 3 个工作日未确认，请联系客服并提供汇款凭证
+        <div class="kv">
+          <div class="row"><span class="l">订单号</span><span class="r" id="actfail-order-num">—</span></div>
+          <div class="row"><span class="l">下单时间</span><span class="r" id="actfail-order-time">—</span></div>
+          <div class="row"><span class="l">增购内容</span><span class="r hl" id="actfail-content">—</span></div>
+          <div class="row" id="actfail-gift-row" style="display:none"><span class="l">赠送点数</span><span class="r" id="actfail-gift">—</span></div>
+          <div class="row"><span class="l">已支付</span><span class="r" id="actfail-total">—</span></div>
+          <div class="row"><span class="l">状态</span><span class="r red">● 激活失败</span></div>
         </div>
+      </div>
+      <div class="alert-block alert-warn"><b>正在重试激活。</b>如无法解决将原路退款。如有疑问，请联系 <b>lingeebc@kingdee.com</b> 并提供订单号。</div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="openContact()">联系客服</button>
+        <button class="btn btn-outline" onclick="copyOrderNum()">复制订单号</button>
       </div>
     </div>
 
-    <!-- Failed state -->
-    <div id="state-failed" style="display:none">
-      <div class="state-page">
-        <div class="state-icon failed">❌</div>
-        <div class="state-title">支付未完成</div>
-        <div class="state-desc">
-          <p>未产生扣款，您可以重新支付或更换支付方式</p>
-          <p>订单将保留 14 天</p>
-        </div>
-        <div class="order-block">
-          <div class="order-block-title">订单信息</div>
-          <div class="order-row"><span class="order-row-key">订单号</span><span class="order-row-val">LG-CN-20260615-EXP-001</span></div>
-          <div class="order-row"><span class="order-row-key">下单时间</span><span class="order-row-val">2026-06-15 14:30（GMT+8）</span></div>
-          <div class="order-row"><span class="order-row-key">增购内容</span><span class="order-row-val" id="failed-content">—</span></div>
-          <div class="order-row"><span class="order-row-key">合计</span><span class="order-row-val" id="failed-total">—</span></div>
-        </div>
-        <div class="state-actions">
-          <div class="state-actions-row">
-            <button class="btn btn-primary" style="height:40px;padding:0 20px" onclick="goStep(3)">重新支付</button>
-            <button class="btn btn-ghost" style="height:40px;padding:0 20px" onclick="goStep(1)">返回修改配置</button>
+    <!-- 4G 已取消 -->
+    <div id="state-cancelled" style="display:none" class="state-narrow">
+      <div class="state-card">
+        <div class="hero">
+          <div class="ic gray">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </div>
+          <h2>订单已取消</h2>
+          <p>订单已取消，未产生任何扣款。您可以随时重新下单。</p>
         </div>
+        <div class="kv">
+          <div class="row"><span class="l">订单号</span><span class="r" id="cancelled-order-num">—</span></div>
+          <div class="row"><span class="l">下单时间</span><span class="r" id="cancelled-order-time">—</span></div>
+          <div class="row"><span class="l">增购内容</span><span class="r hl" id="cancelled-content">—</span></div>
+          <div class="row" id="cancelled-gift-row" style="display:none"><span class="l">赠送点数</span><span class="r" id="cancelled-gift">—</span></div>
+          <div class="row"><span class="l">取消时间</span><span class="r" id="cancelled-time">—</span></div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="goStep(1)">重新下单</button>
       </div>
     </div>
 
   </div>
-</div><!-- /page-step3 -->
+</div><!-- /page-step4 -->
 
 <!-- ══════════════════════════════════════════════════ MODALS ══ -->
 <!-- Agreement modal -->
@@ -1046,17 +1141,57 @@ body{
   </div>
 </div>
 
+<!-- Contact support modal -->
+<div class="modal-overlay" id="modal-contact">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">联系客服</span>
+      <button class="modal-close" onclick="closeModal('modal-contact')">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="margin:0 0 14px;color:var(--muted);font-size:13px;line-height:1.65">订单遇到问题？留言给我们，1 个工作日内为您解决（重新激活或退款）。</p>
+      <div class="form-group">
+        <label class="form-label">订单号</label>
+        <div class="form-value" style="font-family:'SF Mono','Fira Code',monospace" id="contact-order-num">—</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">问题类型</label>
+        <select id="contact-topic" style="width:100%;padding:9px 12px;font-size:13.5px;border:1px solid #D5D8E3;border-radius:10px;background:#fff;color:#334155;font-family:inherit;outline:none">
+          <option value="payment">支付问题</option>
+          <option value="bank-review">转账对账问题</option>
+          <option value="activation">权益激活问题</option>
+          <option value="refund">退款申请</option>
+          <option value="invoice">发票开票</option>
+          <option value="contract">合同问题</option>
+          <option value="other">其他</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">问题描述</label>
+        <textarea id="contact-msg" rows="4" placeholder="请描述您遇到的问题，我们已经知道您的订单号" style="width:100%;padding:9px 12px;font-size:13.5px;border:1px solid #D5D8E3;border-radius:10px;background:#fff;color:#334155;font-family:inherit;outline:none;resize:vertical;line-height:1.6"></textarea>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="submitSupport()">提交</button>
+      <p style="margin:14px 0 0;color:var(--muted);font-size:12px;text-align:center">也可邮件联系：<a href="mailto:lingeebc@kingdee.com" style="color:var(--indigo);text-decoration:none;font-weight:600">lingeebc@kingdee.com</a>，请附订单号。</p>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════════════════════════════════════════ DEMO PANEL ══ -->
 <div class="demo-panel">
   <div class="demo-menu" id="demo-menu">
     <div class="demo-menu-header">🎮 Demo 快速导航</div>
-    <button class="demo-item" onclick="goPage('step1')"><span>⚙️</span> Step 1：配置</button>
-    <button class="demo-item" onclick="goPagePayTab('alipay')"><span>💳</span> Step 2：确认支付（支付宝）</button>
-    <button class="demo-item" onclick="goPagePayTab('bank')"><span>🏦</span> Step 2：确认支付（对公转账）</button>
-    <button class="demo-item" onclick="goPage('step3a')"><span>⏳</span> Step 3A：开通中</button>
-    <button class="demo-item" onclick="goPage('step3b')"><span>✅</span> Step 3B：增购成功</button>
-    <button class="demo-item" onclick="goPage('step3c')"><span>🕒</span> Step 3C：待收款确认</button>
+    <button class="demo-item" onclick="goPage('step1')"><span>⚙️</span> Step 1：配置增购</button>
+    <button class="demo-item" onclick="goPage('step2')"><span>📋</span> Step 2：确认订单</button>
+    <button class="demo-item" onclick="goPagePayTab('alipay')"><span>💳</span> Step 3：支付（支付宝）</button>
+    <button class="demo-item" onclick="goPagePayTab('bank')"><span>🏦</span> Step 3：支付（对公转账）</button>
+    <div class="demo-menu-header">订单状态</div>
+    <button class="demo-item" onclick="goPage('pending')"><span>⏱</span> 订单待支付</button>
     <button class="demo-item" onclick="goPage('failed')"><span>❌</span> 支付失败</button>
+    <button class="demo-item" onclick="goPage('review')"><span>🏦</span> 等待对账确认</button>
+    <button class="demo-item" onclick="goPage('provisioning')"><span>⏳</span> 权益激活中</button>
+    <button class="demo-item" onclick="goPage('success')"><span>✅</span> 权益激活成功</button>
+    <button class="demo-item" onclick="goPage('actfail')"><span>⚠️</span> 权益激活失败</button>
+    <button class="demo-item" onclick="goPage('cancelled')"><span>✕</span> 订单已取消</button>
   </div>
   <button class="demo-toggle" onclick="toggleDemo()">🎮 Demo 导航 ▾</button>
 </div>
@@ -1111,6 +1246,12 @@ function fmtNum(n) {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
+// 把点数格式化成"X 万点"，自动加千分位
+function fmtWan(pts) {
+  const wan = Math.round(pts / 10000);
+  return fmtNum(wan) + ' 万点';
+}
+
 // ──────────────────────────────────────────────────────────────
 // UI UPDATES
 // ──────────────────────────────────────────────────────────────
@@ -1145,7 +1286,7 @@ function updateUI() {
   if (pointsQty > 0) {
     const tierNum = activeTier(pointsQty);
     const rateMap = {1:'¥0.20',2:'¥0.19',3:'¥0.18'};
-    if (ptsResult) ptsResult.textContent = `${fmtNum(pts)} 点 × ${rateMap[tierNum]}/点`;
+    if (ptsResult) ptsResult.textContent = `${fmtWan(pts)} × ${rateMap[tierNum]}/点`;
     if (ptsAmount) ptsAmount.textContent = fmt(pointsCost);
     if (ptsRow)    ptsRow.style.visibility = 'visible';
   } else {
@@ -1177,7 +1318,7 @@ function updateSummary(seatCost, pointsCost, total) {
   const totalEl     = document.getElementById('summary-total');
 
   if (s1seats)     { s1seats.innerHTML     = seatQty > 0   ? `+${seatQty} 席`       : '—'; s1seats.className     = seatQty > 0   ? 'sv' : 'sv dim'; }
-  if (s1points)    { s1points.innerHTML    = pointsQty > 0 ? `${fmtNum(pts)} 点`    : '—'; s1points.className    = pointsQty > 0 ? 'sv' : 'sv dim'; }
+  if (s1points)    { s1points.innerHTML    = pointsQty > 0 ? `${fmtWan(pts)}`    : '—'; s1points.className    = pointsQty > 0 ? 'sv' : 'sv dim'; }
   if (s1seatCost)  { s1seatCost.innerHTML  = seatQty > 0   ? fmt(seatCost)          : '—'; s1seatCost.className  = seatQty > 0   ? 'sv' : 'sv dim'; }
   if (s1pointCost) { s1pointCost.innerHTML = pointsQty > 0 ? fmt(pointsCost)        : '—'; s1pointCost.className = pointsQty > 0 ? 'sv' : 'sv dim'; }
   if (totalEl)     totalEl.textContent   = fmt(total);
@@ -1192,7 +1333,7 @@ function updateSummary(seatCost, pointsCost, total) {
   const btnPay      = document.getElementById('btn-pay');
 
   if (s2seats)     { s2seats.innerHTML     = seatQty > 0   ? `+${seatQty} 席`       : '—'; s2seats.className     = seatQty > 0   ? 'sum2-line-value' : 'sum2-line-value dim'; }
-  if (s2points)    { s2points.innerHTML    = pointsQty > 0 ? `${fmtNum(pts)} 点`    : '—'; s2points.className    = pointsQty > 0 ? 'sum2-line-value' : 'sum2-line-value dim'; }
+  if (s2points)    { s2points.innerHTML    = pointsQty > 0 ? `${fmtWan(pts)}`    : '—'; s2points.className    = pointsQty > 0 ? 'sum2-line-value' : 'sum2-line-value dim'; }
   if (s2seatCost)  { s2seatCost.innerHTML  = seatQty > 0   ? fmt(seatCost)          : '—'; s2seatCost.className  = 'sum2-product-price'; }
   if (s2pointCost) { s2pointCost.innerHTML = pointsQty > 0 ? fmt(pointsCost)        : '—'; s2pointCost.className = 'sum2-line-value'; }
   const ptsCostLine = document.getElementById('pts-cost-line-2');
@@ -1304,55 +1445,112 @@ function updateStepper(active) {
 function showState(state) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-step4').classList.add('active');
-  ['3a','3b','3c','failed'].forEach(s => {
-    document.getElementById('state-' + s).style.display = 'none';
+  ['pending','failed','review','provisioning','success','actfail','cancelled'].forEach(s => {
+    const el = document.getElementById('state-' + s);
+    if (el) el.style.display = 'none';
   });
+
+  // 确保订单号存在（demo 直接跳状态页时也能显示）
+  const orderEl = document.getElementById('order-num');
+  if (orderEl && (orderEl.textContent === '—' || !orderEl.textContent.trim())) {
+    const d = new Date();
+    const ds = d.getFullYear().toString() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
+    const rnd = String(Math.floor(Math.random()*900000)+100000);
+    orderEl.textContent = 'LG-' + ds + '-' + rnd;
+  }
 
   const seatCost   = calcSeatCost(seatQty);
   const pointsCost = calcPointsCost(pointsQty);
   const total      = seatCost + pointsCost;
   const pts        = pointsQty * 10000;
 
+  // 内容描述
   let contentStr = '';
   if (seatQty > 0 && pointsQty > 0)
-    contentStr = `专业版 +${seatQty}席（pro-rata）· ${fmtNum(pts)}点`;
+    contentStr = `专业版 +${seatQty}席（按天补差价）· ${fmtWan(pts)}`;
   else if (seatQty > 0)
-    contentStr = `专业版 +${seatQty}席（pro-rata ${REMAINING_DAYS}天）`;
+    contentStr = `专业版 +${seatQty}席（按天补差价）`;
   else if (pointsQty > 0)
-    contentStr = `${fmtNum(pts)} 点数包`;
+    contentStr = `${fmtWan(pts)}点数包`;
   else
-    contentStr = '专业版 +3席（pro-rata）· 100,000点'; // demo default
+    contentStr = '专业版 +3席（按天补差价）· 10 万点'; // demo default
 
-  const totalStr = total > 0 ? fmt(total) + '（含税）' : '¥2,297.00（含税）';
+  const totalStr = total > 0 ? fmt(total) + '（含税）' : '¥3,564.00（含税）';
+  const orderNum = document.getElementById('order-num')?.textContent || 'LG-20260615-000001';
+  const now = new Date();
+  const orderTime = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}（GMT+8）`;
+  const expireDate = new Date(now.getTime() + 14*24*3600*1000);
+  const expireStr = `${expireDate.getFullYear()}-${String(expireDate.getMonth()+1).padStart(2,'0')}-${String(expireDate.getDate()).padStart(2,'0')}（剩 14 天）`;
 
-  // patch all content/total fields
-  ['processing','pending','failed'].forEach(prefix => {
-    const c = document.getElementById(prefix + '-content');
-    const t = document.getElementById(prefix + '-total');
-    if (c) c.textContent = contentStr;
-    if (t) t.textContent = totalStr;
+  // 通用字段填充
+  const giftPts = seatQty > 0 ? seatQty * 500 : 0;
+  const giftStr = giftPts > 0 ? '500 点 / 席 / 月（仅生产环境）' : '';
+
+  ['pending','failed','review','provisioning','success','actfail','cancelled'].forEach(prefix => {
+    const fields = {
+      'order-num': orderNum,
+      'order-time': orderTime,
+      'content': contentStr,
+      'total': totalStr,
+      'expire': expireStr,
+      'time': orderTime,
+      'gift': giftStr
+    };
+    Object.entries(fields).forEach(([key, val]) => {
+      const el = document.getElementById(`${prefix}-${key}`);
+      if (el) el.textContent = val;
+    });
+    // 控制赠送点行显示
+    const giftRow = document.getElementById(`${prefix}-gift-row`);
+    if (giftRow) giftRow.style.display = giftPts > 0 ? 'flex' : 'none';
   });
 
-  // Success specific
-  const sc = document.getElementById('success-content');
-  const st = document.getElementById('success-total');
-  if (sc) sc.textContent = contentStr;
-  if (st) st.textContent = totalStr;
-
-  const newSeats = CURRENT_SEATS + (seatQty > 0 ? seatQty : 3);
-  const seatsEl  = document.getElementById('success-seats');
-  if (seatsEl) seatsEl.innerHTML = `${CURRENT_SEATS}席 <span class="arrow">→</span> <span class="new">${newSeats}席</span>（有效至 2027-06-15）`;
-
-  const newPoints = CURRENT_POINTS + (pointsQty > 0 ? pts : 100000);
-  const ptsNewEl  = document.getElementById('success-points-new');
-  if (ptsNewEl) ptsNewEl.textContent = fmtNum(newPoints) + ' 点';
-  const ptsDescEl = document.getElementById('success-points-desc');
-  if (ptsDescEl) ptsDescEl.textContent = `${fmtNum(pointsQty > 0 ? pts : 100000)} 点已到账，可在点数管理中查看`;
+  // success 特殊字段
   const ptsRow = document.getElementById('success-points-row');
-  if (ptsRow) ptsRow.style.display = (pointsQty > 0 || state === '3b') ? 'flex' : 'none';
+  if (ptsRow) ptsRow.style.display = 'none'; // 已移除
+  const ptsDescEl = document.getElementById('success-points-desc');
+  if (ptsDescEl) ptsDescEl.textContent = '';
 
   const el = document.getElementById('state-' + state);
   if (el) el.style.display = 'block';
+}
+
+function copyOrderNum() {
+  const num = document.getElementById('order-num')?.textContent || '';
+  if (!num || num === '—') return;
+  navigator.clipboard.writeText(num).then(() => showToast('订单号已复制'));
+}
+
+function openContact() {
+  const num = document.getElementById('order-num')?.textContent || '—';
+  const el = document.getElementById('contact-order-num');
+  if (el) el.textContent = num;
+
+  // 根据当前状态自动预选问题类型
+  const topicMap = {
+    'state-failed': 'payment',
+    'state-review': 'bank-review',
+    'state-actfail': 'activation'
+  };
+  const sel = document.getElementById('contact-topic');
+  if (sel) {
+    let preset = 'other';
+    Object.entries(topicMap).forEach(([id, val]) => {
+      const stateEl = document.getElementById(id);
+      if (stateEl && stateEl.style.display !== 'none' && stateEl.offsetParent !== null) preset = val;
+    });
+    sel.value = preset;
+  }
+
+  openModal('modal-contact');
+}
+
+function submitSupport() {
+  const msg = (document.getElementById('contact-msg')?.value || '').trim();
+  if (!msg) { alert('请描述您遇到的问题'); return; }
+  closeModal('modal-contact');
+  document.getElementById('contact-msg').value = '';
+  showToast('已提交，我们将在 1 个工作日内回复');
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -1363,13 +1561,26 @@ function goPage(page) {
   if (page === 'step1') { goStep(1); return; }
   if (page === 'step2') { goStep(2); return; }
   if (page === 'step3') { goStep(3); return; }
-  if (page === 'step3a') { updateStepper(4); showState('3a'); return; }
-  if (page === 'step3b') { updateStepper(4); showState('3b'); return; }
-  if (page === 'step3c') { updateStepper(4); showState('3c'); return; }
-  if (page === 'step4a') { updateStepper(4); showState('3a'); return; }
-  if (page === 'step4b') { updateStepper(4); showState('3b'); return; }
-  if (page === 'step4c') { updateStepper(4); showState('3c'); return; }
-  if (page === 'failed') { updateStepper(4); showState('failed'); return; }
+  // demo 状态页：如果当前没有任何配置，注入示例数据（3席+10万点）以演示完整效果
+  const demoStates = ['pending','failed','review','provisioning','success','actfail','cancelled'];
+  if (demoStates.includes(page) && seatQty === 0 && pointsQty === 0) {
+    seatQty = 3;
+    pointsQty = 10;
+    const sInput = document.getElementById('seats-input');
+    const pInput = document.getElementById('points-input');
+    if (sInput) sInput.value = 3;
+    if (pInput) pInput.value = 10;
+    updateUI();
+  }
+  if (page === 'pending')      { updateStepper(4); showState('pending'); return; }
+  if (page === 'failed')       { updateStepper(4); showState('failed'); return; }
+  if (page === 'review')       { updateStepper(4); showState('review'); return; }
+  if (page === 'provisioning') { updateStepper(4); showState('provisioning'); return; }
+  if (page === 'success')      { updateStepper(4); showState('success'); return; }
+  if (page === 'actfail')      { updateStepper(4); showState('actfail'); return; }
+  if (page === 'cancelled')    { updateStepper(4); showState('cancelled'); return; }
+  // 兼容旧调用
+  if (page === 'step4c')       { updateStepper(4); showState('review'); return; }
 }
 
 function goPagePayTab(tab) {
@@ -1385,9 +1596,8 @@ function doAlipayPay() {
   updateStepper(4);
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-step4').classList.add('active');
-  showState('3a');
-  // Auto transition to success after 1.5s
-  setTimeout(() => { showState('3b'); }, 1500);
+  showState('provisioning');
+  setTimeout(() => { showState('success'); }, 1500);
 }
 
 let qrTimer = null;
