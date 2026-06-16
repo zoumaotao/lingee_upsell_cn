@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lingee TM 管理后台 — 增购</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --indigo:#6366F1; --indigo-d:#4F46E5; --indigo-l:#818CF8;
+  --ink:#0F172A; --muted:#64748B; --line:#E7E8F0;
+  --bg1:#F5F3FF; --bg2:#FAFAFE;
+  --green:#16A34A; --amber:#F59E0B; --red:#DC2626; --info:#2563EB;
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,'PingFang SC','Hiragino Sans GB',sans-serif;
+  background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 60%,#FAFAFE 100%);
+  color:var(--ink);font-size:14px;min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── TOP NAV ── */
+.top-nav{
+  background:rgba(255,255,255,.88);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);padding:0 32px;
+  display:flex;align-items:center;height:52px;gap:12px;
+  position:sticky;top:0;z-index:100;
+}
+.top-nav-logo{font-size:15px;font-weight:800;color:var(--indigo);letter-spacing:-.3px;display:flex;align-items:center;gap:7px}
+.top-nav-logo-dot{width:7px;height:7px;border-radius:50%;background:var(--indigo);display:inline-block}
+.top-nav-sep{width:1px;height:18px;background:var(--line);margin:0 4px}
+.top-nav-title{font-size:13px;color:var(--muted);font-weight:500}
+
+/* ── STEPPER BAR ── */
+.top-stepper-bar{display:flex;justify-content:center;align-items:center;padding:28px 24px 24px}
+.stepper{display:flex;align-items:center;user-select:none}
+.step-item{display:flex;align-items:center;gap:8px;cursor:pointer}
+.step-num{
+  width:24px;height:24px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;
+  border:1.5px solid #C9CDE8;color:#A3A8C0;background:#fff;
+  transition:all .2s;flex-shrink:0;
+}
+.step-label{font-size:13px;font-weight:500;color:#A3A8C0;white-space:nowrap;transition:color .2s}
+.step-connector{width:48px;height:2px;background:#E9EAF2;margin:0 10px;flex-shrink:0;border-radius:2px}
+.step-item.active .step-num{background:var(--indigo);border-color:var(--indigo);color:#fff;box-shadow:0 0 0 3px rgba(99,102,241,.18)}
+.step-item.active .step-label{color:var(--ink);font-weight:700}
+.step-item.done .step-num{background:var(--green);border-color:var(--green);color:#fff}
+.step-item.done .step-label{color:var(--muted)}
+
+/* ── PAGE ── */
+.page{display:none}
+.page.active{display:block;animation:fade .22s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.container{max-width:1040px;margin:0 auto;padding:0 24px 64px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:880px){.two-col{grid-template-columns:1fr}.summary-card{position:static}}
+@media(max-width:880px){#page-step3 .two-col{grid-template-columns:1fr 280px}}
+@media(max-width:700px){
+  .status-card{flex-direction:column;align-items:flex-start;gap:16px}
+  .status-items{gap:16px;flex-wrap:wrap}
+  .status-order{margin-left:0}
+  .container{padding:0 16px 48px}
+  .top-stepper-bar{padding:20px 16px 16px;overflow-x:auto}
+  .step-connector{width:28px}
+  .step-label{font-size:12px}
+  .top-nav{padding:0 16px}
+  .upsell-input-row{flex-wrap:wrap;gap:8px}
+  .upsell-input-mid{flex:unset;width:100%;text-align:left;order:3}
+  .upsell-input-cost{width:100%;text-align:left;order:4;min-width:unset}
+  .pts-tiers-row{grid-template-columns:1fr}
+  .seat-perks{grid-template-columns:1fr}
+  .pts-notes{grid-template-columns:1fr}
+}
+@media(max-width:480px){.status-items{display:grid;grid-template-columns:1fr 1fr;gap:14px}}
+
+/* ── STATUS CARD ── */
+.status-card{
+  background:linear-gradient(110deg,#4F46E5 0%,#6366F1 50%,#818CF8 100%);
+  border:none;border-radius:16px;
+  padding:18px 22px;margin-bottom:20px;
+  box-shadow:0 8px 28px rgba(99,102,241,.28);
+  display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+}
+.status-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.18);color:#fff;
+  border-radius:999px;padding:4px 12px;
+  font-size:12px;font-weight:700;flex-shrink:0;
+  backdrop-filter:blur(4px);
+  border:1px solid rgba(255,255,255,.25);
+}
+.status-badge .dot{width:6px;height:6px;border-radius:50%;background:#6EF0A8;box-shadow:0 0 0 2px rgba(110,240,168,.3)}
+.status-items{display:flex;gap:28px;flex:1;flex-wrap:wrap}
+.status-item{display:flex;flex-direction:column;gap:2px}
+.status-item-label{font-size:11px;color:rgba(255,255,255,.65);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.status-item-value{font-size:13px;font-weight:700;color:#fff}
+.status-item-value span{color:rgba(255,255,255,.6);font-weight:400}
+.status-order{font-size:11px;color:rgba(255,255,255,.5);margin-left:auto}
+
+/* ── LAYOUT ── */
+.two-col{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+.left-col{display:flex;flex-direction:column;gap:16px}
+
+/* ── CARD ── */
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 24px 15px;box-shadow:0 2px 14px rgba(99,102,241,.06)}
+.card-header{margin-bottom:18px}
+.card-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.card-desc{font-size:12px;color:var(--muted)}
+
+/* ── QTY CONTROL ── */
+.stepper-row{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.stepper-label{font-size:13px;color:var(--ink);font-weight:500;min-width:80px}
+.qty-control{
+  display:flex;align-items:center;
+  border:1px solid #D5D8E3;border-radius:10px;background:#fff;
+  transition:border-color .15s;flex-shrink:0;
+}
+.qty-btn:first-child{border-radius:9px 0 0 9px}
+.qty-btn:last-child{border-radius:0 9px 9px 0}
+.qty-control:focus-within{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+.qty-btn{
+  width:40px;height:40px;border:none;background:#F7F8FC;
+  color:#475569;font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .12s,color .12s;flex-shrink:0;line-height:1;
+}
+.qty-btn:hover{background:#EEF0F8;color:var(--indigo)}
+.qty-btn:disabled{opacity:.35;cursor:not-allowed}
+.qty-input{
+  width:84px;height:40px;text-align:center;
+  border:none;border-left:1px solid #E7E8F0;border-right:1px solid #E7E8F0;
+  font-size:14px;font-weight:600;color:var(--ink);font-family:inherit;outline:none;background:#fff;
+}
+.qty-input::-webkit-inner-spin-button,.qty-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.qty-input[type=number]{-moz-appearance:textfield}
+.stepper-result{font-size:13px;color:var(--muted);flex:1}
+.stepper-result strong{color:var(--indigo);font-weight:700}
+
+/* ── PRORATA ── */
+.prorata-box{background:#F5F3FF;border:1px solid #DDD6FE;border-radius:10px;padding:10px 14px;margin-top:6px}
+.prorata-line{font-size:11px;color:var(--indigo);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
+.prorata-formula{font-size:13px;color:#475569}
+.prorata-formula strong{color:var(--indigo);font-weight:700}
+
+/* ── INFO BOX ── */
+.info-box{display:flex;gap:8px;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;padding:10px 12px;margin-top:12px}
+.info-box-icon{font-size:13px;flex-shrink:0;margin-top:1px}
+.info-box-text{font-size:12px;color:#3730A3;line-height:1.6}
+
+/* ── TIER TABLE ── */
+.tier-table{margin:12px 0 8px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.tier-row{display:grid;grid-template-columns:1fr auto auto;padding:9px 13px;font-size:12.5px;border-bottom:1px solid var(--line);align-items:center;gap:12px;transition:background .12s}
+.tier-row:last-child{border-bottom:none}
+.tier-row.active{background:#F5F3FF}
+.tier-row.active .tier-range{color:var(--indigo);font-weight:700}
+.tier-range{color:#475569;font-weight:500}
+.tier-price{color:var(--ink);font-weight:700;text-align:right}
+.tier-discount{font-size:11px;color:var(--green);background:#F0FDF4;border:1px solid #BBF7D0;border-radius:4px;padding:2px 6px;font-weight:700;text-align:right;min-width:38px}
+.tier-discount.none{background:none;border-color:transparent;color:transparent}
+
+.points-result{display:flex;justify-content:space-between;align-items:center;padding:10px 13px;background:#FAFAFE;border:1px solid var(--line);border-radius:10px;margin-top:10px;font-size:13px;color:#475569}
+.points-result strong{color:var(--indigo);font-size:16px;font-weight:800}
+.disclaimer{font-size:11px;color:#94A3B8;margin-top:10px;line-height:1.6}
+
+/* ── UNIFIED INPUT ROW ── */
+.upsell-input-row{
+  display:flex;align-items:center;gap:12px;
+  background:linear-gradient(100deg,#F5F3FF,#EEF2FF);
+  border:1px solid #DDD6FE;border-radius:12px;padding:12px 16px;
+}
+.upsell-input-label{font-size:13px;font-weight:600;color:var(--ink);flex-shrink:0;min-width:64px}
+.upsell-input-mid{font-size:12.5px;color:var(--muted);flex:1;text-align:center}
+.upsell-input-cost{font-size:12.5px;color:var(--muted);flex-shrink:0;white-space:nowrap;text-align:right;min-width:100px}
+.upsell-input-cost strong{font-size:15px;font-weight:700;color:var(--ink)}
+.seat-current-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(100deg,#F5F3FF,#EEF2FF);
+  border:1px solid #DDD6FE;border-radius:12px;
+  padding:12px 16px;margin-bottom:16px;
+}
+.seat-current-left{display:flex;flex-direction:column;gap:2px}
+.seat-current-label{font-size:11px;font-weight:600;color:#7C3AED;text-transform:uppercase;letter-spacing:.5px}
+.seat-current-value{font-size:22px;font-weight:800;color:var(--indigo);letter-spacing:-.5px;line-height:1.1}
+.seat-current-value span{font-size:13px;font-weight:500;color:#7C6CF0;margin-left:3px}
+.seat-arrow-area{display:flex;align-items:center;gap:10px;color:#A5B4FC;font-size:18px}
+.seat-new-value{font-size:22px;font-weight:800;color:var(--green);letter-spacing:-.5px;line-height:1.1}
+.seat-new-value span{font-size:13px;font-weight:500;color:#16A34A;margin-left:3px}
+.seat-qty-row{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.seat-qty-label{font-size:13px;color:var(--ink);font-weight:600;min-width:72px}
+.seat-cost-preview{
+  flex:1;display:flex;align-items:center;justify-content:flex-end;gap:6px;
+  font-size:12px;color:var(--muted);
+}
+.seat-cost-preview strong{font-size:15px;font-weight:800;color:var(--indigo)}
+.seat-perks{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:14px}
+.seat-perk{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:#475569;line-height:1.45}
+.seat-perk-check{width:16px;height:16px;border-radius:50%;background:#DCFCE7;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.seat-perk-check svg{width:9px;height:9px;stroke:var(--green);stroke-width:2.5;fill:none}
+
+/* ── POINTS CARD v2 ── */
+.pts-v2{display:grid;grid-template-columns:1fr 220px;gap:16px;align-items:start}
+.pts-v2-left{display:flex;flex-direction:column;gap:10px}
+.pts-v2-input-label{font-size:11px;font-weight:700;color:#7C3AED;text-transform:uppercase;letter-spacing:.5px}
+.pts-v2-input-row{display:flex;align-items:center;gap:10px}
+.pts-v2-input-row .qty-control{flex:1}
+.pts-v2-input-row .qty-input{width:100%}
+.pts-v2-wan{font-size:12px;color:#7C6CF0;font-weight:600}
+.pts-v2-result{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 14px;background:#fff;border:1px solid var(--line);
+  border-radius:10px;
+}
+.pts-v2-result-formula{font-size:12px;color:var(--muted)}
+.pts-v2-result-amount{font-size:20px;font-weight:800;color:var(--indigo);letter-spacing:-.5px}
+.pts-v2-tags{display:flex;flex-wrap:wrap;gap:6px}
+.pts-v2-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11.5px;color:#475569;
+  background:#F1F5F9;border:1px solid #E2E8F0;
+  border-radius:6px;padding:3px 9px;
+}
+.pts-v2-tag svg{width:11px;height:11px;stroke:var(--green);stroke-width:2.5;fill:none;flex-shrink:0}
+.pts-v2-right{display:flex;flex-direction:column;gap:6px}
+.pts-v2-tier-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.pts-v2-tier{
+  border:1.5px solid var(--line);border-radius:10px;
+  padding:10px 12px;background:#FAFAFE;
+  transition:all .15s;
+}
+.pts-v2-tier.active{
+  border-color:#A5B4FC;background:#F5F3FF;
+}
+.pts-v2-tier-top{display:flex;justify-content:space-between;align-items:center}
+.pts-v2-tier-range{font-size:12.5px;font-weight:600;color:#475569}
+.pts-v2-tier.active .pts-v2-tier-range{color:var(--indigo)}
+.pts-v2-tier-price{font-size:13px;font-weight:700;color:var(--ink)}
+.pts-v2-tier-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:3px}
+.pts-v2-tier-sub{font-size:10.5px;color:#94A3B8}
+.pts-v2-tier.active .pts-v2-tier-sub{color:#7C6CF0}
+.pts-v2-tier-badge{font-size:10px;color:var(--green);background:#F0FDF4;border:1px solid #BBF7D0;border-radius:4px;padding:1px 6px;font-weight:700}
+.pts-v2-current{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 10px;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:8px;
+  font-size:11px;color:#3730A3;font-weight:600;margin-top:2px;
+}
+.pts-v2-current svg{width:12px;height:12px;stroke:#6366F1;stroke-width:2;fill:none;flex-shrink:0}
+/* ── POINTS TIER 3-COL ── */
+.pts-tiers-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.pts-tier-col{
+  border:1px solid var(--line);border-radius:11px;
+  padding:12px 14px;background:#FAFAFE;
+  display:flex;flex-direction:column;gap:4px;
+}
+.pts-tier-col-range{font-size:11.5px;font-weight:600;color:#64748B}
+.pts-tier-col-price{font-size:18px;font-weight:800;color:var(--ink);letter-spacing:-.3px;line-height:1.2}
+.pts-tier-col-unit{font-size:11px;color:#94A3B8}
+.pts-notes{
+  margin-top:12px;
+  display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;
+}
+.pts-note-item{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:#475569;line-height:1.45}
+.pts-note-check{width:16px;height:16px;border-radius:50%;background:#DCFCE7;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.pts-note-check svg{width:9px;height:9px;stroke:var(--green);stroke-width:2.5;fill:none}
+.pts-note-item.warn{color:#94A3B8}
+.pts-note-item.warn .pts-note-check{background:#F1F5F9}
+.pts-note-item.warn .pts-note-check svg{stroke:#94A3B8}
+.corp-list{display:grid;grid-template-columns:1fr 1fr;gap:18px 24px;margin-bottom:12px}
+.corp-item{display:flex;flex-direction:column;gap:3px}
+.corp-item-full{grid-column:1/-1}
+.corp-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+.corp-value{font-size:13.5px;font-weight:500;color:var(--ink)}
+.corp-badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;color:var(--green);background:#F0FDF4;border:1px solid #BBF7D0;border-radius:6px;padding:2px 8px}
+.corp-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+@media(max-width:700px){.corp-list{grid-template-columns:1fr}}
+
+/* ── SUMMARY CARD v2 (step2) ── */
+.sum2-card{
+  background:#fff;border:1px solid #eee;border-radius:16px;
+  box-shadow:0 2px 12px rgba(99,102,241,.06);
+  position:sticky;top:72px;padding:22px;
+}
+.sum2-header{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.sum2-header{padding:18px 20px 4px;font-size:16px;font-weight:800;color:var(--ink)}
+.sum2-body{padding:0 20px 20px}
+.sum2-ordernum{font-size:12.5px;color:var(--muted);padding:8px 0 14px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.sum2-ordernum span{font-family:'SF Mono','Fira Code',monospace;color:var(--ink)}
+.sum2-product{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px}
+.sum2-product-name{font-size:14px;font-weight:700;color:var(--ink)}
+.sum2-product-price{font-size:14px;font-weight:700;color:var(--ink)}
+.sum2-product-sub{font-size:12px;color:var(--muted);margin-bottom:12px}
+.sum2-line{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px}
+.sum2-line-label{color:var(--muted)}
+.sum2-line-value{color:var(--ink);font-weight:500}
+.sum2-line-value.dim{color:var(--muted);font-weight:400}
+.sum2-div{border:none;border-top:1px solid var(--line);margin:12px 0}
+.sum2-total{display:flex;justify-content:space-between;align-items:center;padding:4px 0 2px}
+.sum2-total-label{font-size:15px;font-weight:800;color:var(--ink)}
+.sum2-total-amount{font-size:26px;font-weight:800;color:var(--ink);letter-spacing:-.5px}
+.sum2-tax{font-size:11px;color:#94A3B8;margin-bottom:16px}
+.sum2-cancel{display:block;text-align:center;font-size:12.5px;color:var(--red);text-decoration:underline;cursor:pointer;margin-top:10px;background:none;border:none;font-family:inherit;width:100%}
+/* ── ORDER SUMMARY ── */
+.summary-card{
+  background:#fff;border:1px solid #eee;border-radius:16px;
+  box-shadow:0 2px 12px rgba(99,102,241,.06);
+  position:sticky;top:72px;padding:22px;
+}
+.summary-card h3{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.summary-header{display:none}
+.summary-body{padding:0}
+.sline{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:#475569;padding:7px 0}
+.sline .sl{flex-shrink:0}
+.sline .sv{font-weight:600;color:var(--ink);text-align:right}
+.sline .sv.dim{color:var(--muted);font-weight:400}
+.sdiv{height:1px;background:var(--line);margin:8px 0}
+.stotal{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#475569;padding-top:4px}
+.stotal-label{font-size:13px;color:var(--muted)}
+.stotal-amount{font-size:24px;font-weight:800;color:var(--ink);letter-spacing:-.5px;line-height:1.1}
+.summary-tax{font-size:11px;color:#94A3B8;margin-top:10px;margin-bottom:14px;line-height:1.6}
+.summary-empty{text-align:center;color:#94A3B8;font-size:12px;padding:18px 0;background:#FAFAFE;border:1px dashed #D5D8E3;border-radius:10px}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:6px;padding:0 20px;height:42px;border-radius:11px;
+  font-size:13.5px;font-weight:600;cursor:pointer;border:none;
+  transition:.15s;text-decoration:none;font-family:inherit;white-space:nowrap;
+}
+@property --gx{syntax:'<length-percentage>';inherits:false;initial-value:50%}
+@property --gy{syntax:'<length-percentage>';inherits:false;initial-value:50%}
+@property --glow{syntax:'<number>';inherits:false;initial-value:0}
+.btn-primary{
+  --gx:50%;--gy:50%;--glow:0;
+  position:relative;overflow:hidden;color:#fff;
+  background:
+    radial-gradient(90px circle at var(--gx) var(--gy),rgba(255,255,255,calc(.28*var(--glow))),rgba(255,255,255,0) 45%),
+    linear-gradient(100deg,#7C6CF0 0%,#6366F1 42%,#3B82F6 100%);
+  box-shadow:0 6px 20px rgba(91,99,235,.30);
+  transition:--glow .3s ease,box-shadow .2s ease,transform .12s ease;
+}
+.btn-primary:hover{--glow:1;box-shadow:0 10px 28px rgba(91,99,235,.42);transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(0)}
+.btn-primary:disabled{--glow:0;background:#C7CBE0;box-shadow:none;cursor:not-allowed;transform:none}
+.btn-outline{background:#fff;color:#334155;border:1px solid #D5D8E3;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.btn-outline:hover{border-color:#CBD0DE;background:#FCFCFE}
+.btn-ghost{background:transparent;color:var(--indigo);border:1px solid var(--indigo)}
+.btn-ghost:hover{background:var(--bg1)}
+.btn-success{
+  background:linear-gradient(100deg,#16A34A,#15803D);
+  color:#fff;border:none;
+  box-shadow:0 4px 14px rgba(22,163,74,.3);
+}
+.btn-success:hover{box-shadow:0 6px 18px rgba(22,163,74,.4);transform:translateY(-1px)}
+.btn-full{width:100%;height:44px;font-size:14px;border-radius:11px}
+.link-btn{background:none;border:none;color:var(--indigo);font-size:12px;cursor:pointer;font-family:inherit;text-decoration:underline;padding:0}
+.text-link{color:var(--indigo);text-decoration:none;font-size:12px;cursor:pointer;font-weight:600}
+.text-link:hover{text-decoration:underline}
+
+/* ── STEP 2 FORMS ── */
+.form-group{margin-bottom:14px}
+.form-label{font-size:12px;font-weight:600;color:#475569;margin-bottom:6px;display:block}
+.form-value{font-size:13.5px;color:#334155;font-weight:500;background:#F7F8FC;border:1px solid #D5D8E3;border-radius:10px;padding:9px 12px}
+.form-hint{font-size:11px;color:#94A3B8;margin-top:6px;line-height:1.55}
+
+.checkbox-row{display:flex;align-items:flex-start;gap:9px;padding:12px 14px;background:#FAFAFE;border:1px solid #D5D8E3;border-radius:10px;transition:border-color .15s}
+.checkbox-row:has(input:checked){border-color:var(--indigo);background:#F5F3FF}
+.checkbox-row input[type="checkbox"]{width:16px;height:16px;margin-top:2px;accent-color:var(--indigo);cursor:pointer;flex-shrink:0}
+.checkbox-row label{font-size:12.5px;color:#475569;cursor:pointer;line-height:1.6}
+.checkbox-row label a{color:var(--indigo);text-decoration:none;font-weight:600}
+.checkbox-row label a:hover{text-decoration:underline}
+
+/* ── PAY TABS ── */
+.pay-tabs{display:flex;background:#F1F2F8;border-radius:10px;margin-bottom:16px;padding:4px;gap:4px}
+.pay-tab{flex:1;padding:8px 14px;text-align:center;cursor:pointer;font-size:13px;font-weight:600;color:#64748B;background:transparent;border:none;transition:all .15s;border-radius:8px;font-family:inherit}
+.pay-tab.active{background:#fff;color:var(--indigo);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.pay-panel{display:none}
+.pay-panel.active{display:block;animation:fade .2s ease}
+
+.qr-area{display:flex;flex-direction:column;align-items:center;padding:22px 0 14px;gap:10px;background:#FAFAFD;border-radius:12px;margin-bottom:12px}
+.qr-box{width:144px;height:144px;background:#FAFAFE;border:1.5px dashed #C9CDE8;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#94A3B8;font-size:12px;text-align:center}
+.qr-box svg{opacity:.2}
+.qr-note{font-size:12px;color:var(--muted);text-align:center;line-height:1.5}
+.qr-warning{font-size:11px;color:#92400E;text-align:center;background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:5px 10px}
+
+.bank-table{width:100%;border-collapse:collapse}
+.bank-table tr{border-bottom:1px solid var(--line)}
+.bank-table tr:last-child{border-bottom:none}
+.bank-table td{padding:9px 0;font-size:13px;vertical-align:top}
+.bank-table td:first-child{color:var(--muted);font-size:12px;width:110px;padding-right:8px;padding-top:11px;font-weight:500}
+.bank-highlight{background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:7px 11px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-family:'SF Mono','Fira Code',monospace;font-size:13px;font-weight:700;color:#92400E}
+.copy-btn{font-size:11px;background:#fff;border:1px solid #FED7AA;border-radius:5px;padding:3px 8px;cursor:pointer;color:#92400E;font-family:inherit;white-space:nowrap;transition:background .12s;font-weight:600}
+.copy-btn:hover{background:#FFF7ED}
+.bank-note{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.75;padding:10px 13px;background:#FFFBEB;border-radius:10px;border:1px solid #FDE68A}
+
+/* ── STEP 3 STATES ── */
+.state-page{max-width:520px;margin:0 auto;text-align:center;padding:40px 0}
+.state-icon{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:26px;color:#fff}
+.state-icon.processing{background:var(--indigo);animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(99,102,241,.4)}50%{box-shadow:0 0 0 8px rgba(99,102,241,0)}}
+.state-icon.success{background:var(--green)}
+.state-icon.pending{background:var(--amber)}
+.state-icon.failed{background:var(--red)}
+.state-title{font-size:22px;font-weight:800;color:var(--ink);margin-bottom:8px;letter-spacing:-.3px}
+.state-desc{font-size:13px;color:var(--muted);line-height:1.75;margin-bottom:24px}
+.state-desc p{margin-bottom:2px}
+
+.order-block{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 20px;text-align:left;margin-bottom:22px;box-shadow:0 2px 14px rgba(99,102,241,.06)}
+.order-block-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.order-row{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid #F1F2F7;gap:12px}
+.order-row:last-child{border-bottom:none}
+.order-row-key{color:var(--muted);font-weight:500}
+.order-row-val{color:var(--ink);font-weight:600;text-align:right}
+.order-row-val .arrow{color:#94A3B8;font-weight:400}
+.order-row-val .new{color:var(--green);font-weight:700}
+
+.state-actions{display:flex;flex-direction:column;gap:8px;align-items:center;margin-bottom:14px}
+.state-actions-row{display:flex;gap:10px}
+.state-receipt{font-size:11px;color:var(--muted);line-height:1.7}
+
+/* ── SPINNER ── */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:32px;height:32px;border:3px solid rgba(99,102,241,.2);border-top-color:var(--indigo);border-radius:50%;animation:spin .75s linear infinite}
+
+/* ── DEMO PANEL ── */
+.demo-panel{position:fixed;bottom:20px;right:20px;z-index:9999}
+.demo-toggle{background:rgba(15,23,42,.9);backdrop-filter:blur(6px);color:#fff;border:none;border-radius:20px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.3);display:flex;align-items:center;gap:6px;font-family:inherit;margin-left:auto;transition:background .15s}
+.demo-toggle:hover{background:rgba(15,23,42,1)}
+.demo-menu{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.15);overflow:hidden;margin-bottom:8px;min-width:240px;display:none}
+.demo-menu.open{display:block;animation:fade .2s ease}
+.demo-menu-header{padding:9px 14px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;background:#FAFAFE;border-bottom:1px solid var(--line)}
+.demo-item{display:flex;align-items:center;gap:9px;width:100%;padding:9px 14px;border:none;background:#fff;font-size:13px;color:#334155;cursor:pointer;text-align:left;font-family:inherit;border-bottom:1px solid #F8F9FA;transition:background .1s}
+.demo-item:last-child{border-bottom:none}
+.demo-item:hover{background:#F5F3FF;color:var(--indigo)}
+.demo-item span{font-size:14px}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:16px;width:520px;max-height:82vh;overflow-y:auto;box-shadow:0 24px 70px rgba(0,0,0,.2);border:1px solid var(--line)}
+.modal-header{padding:18px 20px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1}
+.modal-title{font-size:15px;font-weight:700;color:var(--ink)}
+.modal-close{background:#F1F2F8;border:none;cursor:pointer;width:26px;height:26px;border-radius:50%;font-size:14px;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:background .12s;font-family:inherit}
+.modal-close:hover{background:#E4E5F0;color:var(--ink)}
+.modal-body{padding:18px 20px;font-size:13px;color:#334155;line-height:1.85}
+.modal-body h3{font-size:13px;font-weight:700;color:var(--ink);margin:14px 0 5px;padding-left:10px;border-left:3px solid var(--indigo)}
+.modal-body h3:first-child{margin-top:0}
+.modal-footer{padding:12px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;background:#FAFAFE}
+
+/* ── MISC ── */
+.section-sep{border:none;border-top:1px solid var(--line);margin:4px 0}
+.tag-green{color:var(--green);background:#F0FDF4;border:1px solid #BBF7D0;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:700}
+.summary-footer-note{font-size:11px;color:#94A3B8;margin-top:10px;line-height:1.6;padding:9px 11px;background:#FAFAFE;border-radius:10px;border:1px solid var(--line)}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════ TOP NAV BAR ══ -->
+<nav class="top-nav">
+  <div class="top-nav-logo">
+    <span class="top-nav-logo-dot"></span>
+    Lingee
+  </div>
+  <div class="top-nav-sep"></div>
+  <span class="top-nav-title">管理后台 · 增购</span>
+</nav>
+
+<!-- ══════════════════════════════════════════ TOP STEPPER BAR ══ -->
+<div class="top-stepper-bar">
+  <div class="stepper">
+    <div class="step-item active" id="nav-step1" onclick="goStep(1)">
+      <div class="step-num" id="step-num-1">1</div>
+      <span class="step-label">配置增购</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item" id="nav-step2" onclick="goStep(2)">
+      <div class="step-num" id="step-num-2">2</div>
+      <span class="step-label">确认订单</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item" id="nav-step3" onclick="goStep(3)">
+      <div class="step-num" id="step-num-3">3</div>
+      <span class="step-label">选择支付</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item" id="nav-step4">
+      <div class="step-num" id="step-num-4">4</div>
+      <span class="step-label">完成</span>
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ STEP 1: CONFIGURE ══ -->
+<div class="page active" id="page-step1">
+  <div class="container">
+
+    <!-- Subscription status -->
+    <div class="status-card">
+      <div class="status-badge"><span class="dot"></span>订阅有效</div>
+      <div class="status-items">
+        <div class="status-item">
+          <div class="status-item-label">套餐</div>
+          <div class="status-item-value">专业版 <span>· 年订阅</span></div>
+        </div>
+        <div class="status-item">
+          <div class="status-item-label">当前席位</div>
+          <div class="status-item-value">10 席</div>
+        </div>
+        <div class="status-item">
+          <div class="status-item-label">赠送点余额</div>
+          <div class="status-item-value">3,200 <span>/ 5,000 本月</span></div>
+        </div>
+        <div class="status-item">
+          <div class="status-item-label">增购点余额</div>
+          <div class="status-item-value">35,000 <span>点 · 合同期内</span></div>
+        </div>
+        <div class="status-item">
+          <div class="status-item-label">订阅到期</div>
+          <div class="status-item-value">2027-06-15 <span>· 剩余 365 天</span></div>
+        </div>
+      </div>
+      <div class="status-order">企业 TID：22613659</div>
+    </div>
+
+    <!-- Two column -->
+    <div class="two-col">
+      <div class="left-col">
+
+        <!-- Block 1: Seats -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">增购席位</div>
+            <div class="card-desc">按剩余订阅天数补差价，新席位立即可用</div>
+          </div>
+
+          <!-- 输入行 -->
+          <div class="upsell-input-row" style="margin-bottom:14px">
+            <span class="upsell-input-label">增购数量</span>
+            <div class="qty-control">
+              <button class="qty-btn" onclick="changeSeats(-1)">−</button>
+              <input class="qty-input" id="seats-input" type="number" value="0" min="0" max="500" oninput="onSeatInput()" />
+              <button class="qty-btn" onclick="changeSeats(1)">+</button>
+            </div>
+            <span class="upsell-input-mid" id="seat-mid-label">当前 10 席</span>
+            <span class="upsell-input-cost" id="seat-cost-hint" style="visibility:hidden">预估 <strong id="seat-cost-val">¥0</strong></span>
+          </div>
+
+          <!-- 权益 checkmarks -->
+          <div class="seat-perks">
+            <div class="seat-perk">
+              <div class="seat-perk-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+              <span>按剩余天数补差价，立即可用</span>
+            </div>
+            <div class="seat-perk">
+              <div class="seat-perk-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+              <span>下月起每席每月赠 500 点</span>
+            </div>
+            <div class="seat-perk">
+              <div class="seat-perk-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+              <span>赠送灵基点数当月有效，仅生产环境</span>
+            </div>
+            <div class="seat-perk">
+              <div class="seat-perk-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+              <span>与原订阅同步到期</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Block 2: Points -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">增购灵基点数</div>
+            <div class="card-desc">按需增购，即时到账，随合同到期</div>
+          </div>
+
+          <!-- 输入行 -->
+          <div class="upsell-input-row" style="margin-bottom:12px">
+            <span class="upsell-input-label">购买万点</span>
+            <div class="qty-control">
+              <button class="qty-btn" onclick="changePoints(-1)">−</button>
+              <input class="qty-input" id="points-input" type="number" value="0" min="0" max="500" oninput="onPointsInput()" />
+              <button class="qty-btn" onclick="changePoints(1)">+</button>
+            </div>
+            <span class="upsell-input-mid" id="points-result-label">请输入购买数量</span>
+            <span class="upsell-input-cost" id="points-result-row" style="visibility:hidden">预估 <strong id="points-result-amount">¥0</strong></span>
+          </div>
+
+          <!-- 三列阶梯定价 -->
+          <div class="pts-tiers-row">
+            <div class="pts-tier-col" id="tier-row-1">
+              <div class="pts-tier-col-range">1 – 50 万点</div>
+              <div style="display:flex;align-items:baseline;gap:3px">
+                <div class="pts-tier-col-price">¥0.20</div>
+                <div class="pts-tier-col-unit">元 / 点</div>
+              </div>
+            </div>
+            <div class="pts-tier-col" id="tier-row-2">
+              <div class="pts-tier-col-range">51 – 100 万点</div>
+              <div style="display:flex;align-items:baseline;gap:3px">
+                <div class="pts-tier-col-price">¥0.19</div>
+                <div class="pts-tier-col-unit">元 / 点</div>
+              </div>
+            </div>
+            <div class="pts-tier-col" id="tier-row-3">
+              <div class="pts-tier-col-range">101 万点以上</div>
+              <div style="display:flex;align-items:baseline;gap:3px">
+                <div class="pts-tier-col-price">¥0.18</div>
+                <div class="pts-tier-col-unit">元 / 点</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 说明块 -->
+          <div class="pts-notes">
+            <div class="pts-note-item"><div class="pts-note-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>最低 1 万点起购，支持多模型调用</div>
+            <div class="pts-note-item"><div class="pts-note-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>生产 + 沙箱环境均可用</div>
+            <div class="pts-note-item"><div class="pts-note-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>可按人分配使用上限</div>
+            <div class="pts-note-item"><div class="pts-note-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>随主合同租期有效，过期作废</div>
+            <div class="pts-note-item"><div class="pts-note-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>可实时监控消耗用量</div>
+            <div class="pts-note-item warn"><div class="pts-note-check"><svg viewBox="0 0 12 12"><path d="M6 2L6 7M6 9.5L6 10" stroke-linecap="round"/></svg></div>不可退款、不结转、不可兑换现金或其他服务</div>
+          </div>
+        </div>
+
+      </div><!-- /left-col -->
+
+      <!-- Right: Order Summary -->
+      <div>
+        <div class="summary-card">
+          <h3>订单摘要</h3>
+          <div class="summary-body">
+
+            <!-- 配置行 -->
+            <div class="sline"><span class="sl">套餐</span><span class="sv">专业版</span></div>
+            <div class="sline"><span class="sl">订阅到期</span><span class="sv">2027-06-15 · 剩余 365 天</span></div>
+            <div class="sline"><span class="sl">增购席位</span><span class="sv" id="sl-seats">—</span></div>
+            <div class="sline"><span class="sl">增购点数</span><span class="sv" id="sl-points">—</span></div>
+
+            <div class="sdiv"></div>
+
+            <!-- 费用行 -->
+            <div class="sline"><span class="sl">席位费</span><span class="sv" id="sl-seat-cost">—</span></div>
+            <div class="sline"><span class="sl">点数费</span><span class="sv" id="sl-point-cost">—</span></div>
+
+            <div class="sdiv"></div>
+
+            <!-- 合计 -->
+            <div class="stotal" style="margin: 15px 0 20px 0;">
+              <div>
+                <div class="stotal-label">合计（含税）</div>
+              </div>
+              <div class="stotal-amount" id="summary-total">¥0.00</div>
+            </div>
+            <button class="btn btn-primary btn-full" id="btn-checkout" onclick="goStep(2)" disabled>
+              继续结算
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /two-col -->
+  </div>
+</div><!-- /page-step1 -->
+
+<!-- ════════════════════════════════════ STEP 2: CONFIRM ORDER ══ -->
+<div class="page" id="page-step2">
+  <div class="container">
+    <div class="two-col">
+      <div class="left-col">
+
+        <!-- 企业认证信息 -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">企业认证信息</div>
+          </div>
+          <div class="corp-list">
+            <div class="corp-item">
+              <div class="corp-label">企业名称</div>
+              <div class="corp-value">深圳鑫晨科技有限公司</div>
+            </div>
+            <div class="corp-item">
+              <div class="corp-label">企业 TID</div>
+              <div class="corp-value" style="color:var(--muted)">22613659</div>
+            </div>
+            <div class="corp-item">
+              <div class="corp-label">统一社会信用代码</div>
+              <div class="corp-value" style="font-size:12.5px;font-family:'SF Mono','Fira Code',monospace;letter-spacing:.3px">91440300XXXXXXXXXXXXXXXX</div>
+            </div>
+            <div class="corp-item">
+              <div class="corp-label">认证状态</div>
+              <div class="corp-value"><span class="corp-badge"><span class="corp-badge-dot"></span>已认证</span></div>
+            </div>
+            <div class="corp-item">
+              <div class="corp-label">联系人</div>
+              <div class="corp-value">张明</div>
+            </div>
+            <div class="corp-item">
+              <div class="corp-label">手机号</div>
+              <div class="corp-value">138****8888</div>
+            </div>
+          </div>
+          <div class="form-hint">
+            企业信息来自金蝶云企业账号中心，如需变更请前往
+            <a href="https://account.kdcloud.com" class="text-link">金蝶云企业账号中心</a>
+          </div>
+        </div>
+
+        <!-- 服务协议 -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">服务协议</div>
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" id="agree-checkbox" onchange="updatePayBtn()" />
+            <label for="agree-checkbox">
+              我已阅读并同意
+              <a href="#" onclick="openModal('modal-agreement'); return false;">《Lingee 服务订阅协议》</a>
+              和
+              <a href="#" onclick="openModal('modal-notice'); return false;">《购买须知》</a>
+            </label>
+          </div>
+          <div class="form-hint" style="margin-top:8px">本次增购适用原订阅协议，订购即生效</div>
+        </div>
+
+      </div><!-- /left-col -->
+
+      <!-- 右侧：订单摘要 + 提交订单 -->
+      <div>
+        <div class="summary-card">
+          <h3>订单摘要</h3>
+          <div class="summary-body">
+            <div class="sline"><span class="sl">套餐</span><span class="sv">专业版</span></div>
+            <div class="sline"><span class="sl">订阅到期</span><span class="sv">2027-06-15 · 剩余 365 天</span></div>
+            <div class="sline"><span class="sl">增购席位</span><span class="sv dim" id="sl-seats-2">—</span></div>
+            <div class="sline"><span class="sl">增购点数</span><span class="sv dim" id="sl-points-2">—</span></div>
+            <div class="sdiv"></div>
+            <div class="sline"><span class="sl">席位费</span><span class="sv dim" id="sl-seat-cost-2">—</span></div>
+            <div class="sline"><span class="sl">点数费</span><span class="sv dim" id="sl-point-cost-2">—</span></div>
+            <div class="sdiv"></div>
+            <div class="stotal" style="margin: 15px 0 20px 0;">
+              <div class="stotal-label" >应付金额（含税）</div>
+              <div class="stotal-amount" id="summary-total-2">¥0.00</div>
+            </div>
+            <button class="btn btn-primary btn-full" id="btn-submit-order" onclick="submitOrder()" disabled>
+              提交订单
+            </button>
+            <div style="text-align:center;margin-top:10px">
+              <a href="javascript:void(0)" onclick="goStep(1)" style="font-size:12px;color:var(--muted);text-decoration:none">← 返回修改</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /two-col -->
+  </div>
+</div><!-- /page-step2 -->
+
+<!-- ═══════════════════════════════════════ STEP 3: PAYMENT ══ -->
+<div class="page" id="page-step3">
+  <div class="container">
+    <div class="two-col" style="grid-template-columns:1fr 300px;align-items:start">
+      <div class="left-col">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">选择支付方式</div>
+          </div>
+
+          <div class="pay-tabs">
+            <button class="pay-tab active" id="tab-alipay" onclick="switchPayTab('alipay')">
+              企业支付宝
+              <span style="display:block;font-size:10.5px;font-weight:400;color:var(--muted);margin-top:1px">推荐 · 即时确认并激活权益</span>
+            </button>
+            <button class="pay-tab" id="tab-bank" onclick="switchPayTab('bank')">
+              对公银行转账
+              <span style="display:block;font-size:10.5px;font-weight:400;color:var(--muted);margin-top:1px">1–3 个工作日确认 · 转账备注订单号</span>
+            </button>
+          </div>
+
+          <!-- Alipay panel -->
+          <div class="pay-panel active" id="panel-alipay" >
+            <div class="qr-area">
+              <!-- 二维码占位 -->
+              <div class="qr-box" id="qr-box" style="width:180px;height:180px;background:#fff;border:none;border-radius:8px;padding:8px">
+                <svg width="160" height="160" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width=".6">
+                  <rect x="2" y="2" width="8" height="8" rx=".8"/>
+                  <rect x="14" y="2" width="8" height="8" rx=".8"/>
+                  <rect x="2" y="14" width="8" height="8" rx=".8"/>
+                  <rect x="4" y="4" width="4" height="4"/><rect x="16" y="4" width="4" height="4"/><rect x="4" y="16" width="4" height="4"/>
+                  <line x1="14" y1="14" x2="14" y2="14.01"/><line x1="17" y1="14" x2="17" y2="14.01"/>
+                  <line x1="20" y1="14" x2="20" y2="14.01"/><line x1="14" y1="17" x2="14" y2="17.01"/>
+                  <line x1="17" y1="17" x2="22" y2="17"/><line x1="14" y1="20" x2="14" y2="22"/>
+                  <line x1="17" y1="20" x2="17" y2="20.01"/><line x1="20" y1="20" x2="22" y2="20"/>
+                </svg>
+              </div>
+
+              <!-- 收款方 + 倒计时 -->
+              <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-top: 5px;">
+                <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--green);background:#F0FDF4;border:1px solid #BBF7D0;border-radius:6px;padding:3px 10px;font-weight:600">
+                  <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="2,6 5,9 10,3"/></svg>
+                  官方收款
+                </span>
+                <span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--indigo);background:#EEF2FF;border:1px solid #C7D2FE;border-radius:6px;padding:3px 10px;font-weight:600">
+                  二维码有效期 <span id="qr-countdown">05:00</span>
+                  <button onclick="refreshQR()" title="刷新二维码" style="background:none;border:none;cursor:pointer;padding:0;margin-left:2px;display:inline-flex;align-items:center;color:var(--indigo)">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                  </button>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bank transfer panel -->
+          <div class="pay-panel" id="panel-bank">
+            <div style="background:#F5F6F8;border-radius:12px;padding:15px;margin:10px 0 0 0">
+              <div style="border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;margin-bottom:12px">
+                <div style="display:flex;padding:12px 16px;border-bottom:1px solid var(--line);gap:16px">
+                  <span style="font-size:12.5px;color:var(--muted);width:72px;flex-shrink:0">账户名</span>
+                  <span style="font-size:13px;font-weight:600;color:var(--ink)">金蝶软件（中国）有限公司</span>
+                </div>
+                <div style="display:flex;padding:12px 16px;border-bottom:1px solid var(--line);gap:16px;align-items:center">
+                  <span style="font-size:12.5px;color:var(--muted);width:72px;flex-shrink:0">账号</span>
+                  <span style="font-size:13px;font-weight:600;color:var(--ink);font-family:'SF Mono','Fira Code',monospace;flex:1">4400 1234 5678 9012</span>
+                </div>
+                <div style="display:flex;padding:12px 16px;border-bottom:1px solid var(--line);gap:16px">
+                  <span style="font-size:12.5px;color:var(--muted);width:72px;flex-shrink:0">开户行</span>
+                  <span style="font-size:13px;font-weight:600;color:var(--ink)">中国建设银行 深圳南山支行</span>
+                </div>
+                <div style="display:flex;padding:12px 16px;gap:16px;align-items:center">
+                  <span style="font-size:12.5px;color:var(--muted);width:72px;flex-shrink:0">转账备注</span>
+                  <span style="font-size:13px;font-weight:700;color:var(--indigo);font-family:'SF Mono','Fira Code',monospace;flex:1" id="bank-order-ref">—</span>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <a href="javascript:void(0)" onclick="copyBankInfo(this)" style="font-size:12.5px;color:var(--indigo);text-decoration:none;font-weight:600">一键复制全部</a>
+                <span id="copy-done" style="display:none;font-size:11px;color:var(--green);display:none;align-items:center;gap:3px">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="2,6 5,9 10,3"/></svg>已复制
+                </span>
+              </div>
+            </div>
+            <div style="font-size:11.5px;color:var(--muted);height:20px;text-align:center"></div>
+            <button class="btn btn-primary btn-full" id="btn-bank-done" onclick="goPage('step4c')">
+              我已转账，提交确认
+            </button>
+          </div>
+
+        </div><!-- /pay card -->
+      </div><!-- /left-col -->
+
+      <!-- 右侧：只读订单摘要 -->
+      <div>
+        <div class="summary-card" style="position:static">
+          <h3>订单摘要</h3>
+          <div class="summary-body">
+            <div class="sline"><span class="sl" style="color:var(--muted);font-size:12px">订单号</span><span class="sv" style="font-size:12px;font-family:'SF Mono','Fira Code',monospace" id="order-num">—</span></div>
+            <div class="sdiv"></div>
+            <div class="sline"><span class="sl">套餐</span><span class="sv">专业版</span></div>
+            <div class="sline"><span class="sl">订阅到期</span><span class="sv">2027-06-15 · 剩余 365 天</span></div>
+            <div class="sline"><span class="sl">增购席位</span><span class="sv dim" id="sl-seats-3">—</span></div>
+            <div class="sline"><span class="sl">增购点数</span><span class="sv dim" id="sl-points-3">—</span></div>
+            <div class="sdiv"></div>
+            <div class="sline"><span class="sl">席位费</span><span class="sv dim" id="sl-seat-cost-3">—</span></div>
+            <div class="sline"><span class="sl">点数费</span><span class="sv dim" id="sl-point-cost-3">—</span></div>
+            <div class="sdiv"></div>
+            <div class="stotal">
+              <div class="stotal-label">应付金额（含税）</div>
+              <div class="stotal-amount" id="summary-total-3">¥0.00</div>
+            </div>
+            <div style="text-align:center;margin-top:20px">
+              <a href="javascript:void(0)" onclick="goStep(2)" style="font-size:12px;color:var(--muted);text-decoration:none">← 返回确认订单</a>
+            </div>
+            <button class="sum2-cancel" onclick="alert('取消订单功能（演示）')">取消订单</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /two-col -->
+  </div>
+</div><!-- /page-step3 -->
+
+<!-- ═══════════════════════════════════════════ STEP 4 STATES ══ -->
+<div class="page" id="page-step4">
+  <div class="container">
+
+    <!-- 4A Processing -->
+    <div id="state-3a" style="display:none">
+      <div class="state-page">
+        <div class="state-icon processing"><div class="spinner"></div></div>
+        <div class="state-title">正在为您开通增购权益…</div>
+        <div class="state-desc">
+          <p>支付已确认，席位和点数正在激活</p>
+          <p>通常在 1 分钟内完成</p>
+        </div>
+        <div class="order-block">
+          <div class="order-block-title">订单信息</div>
+          <div class="order-row"><span class="order-row-key">订单号</span><span class="order-row-val">LG-CN-20260615-EXP-001</span></div>
+          <div class="order-row"><span class="order-row-key">下单时间</span><span class="order-row-val">2026-06-15 14:30（GMT+8）</span></div>
+          <div class="order-row"><span class="order-row-key">增购内容</span><span class="order-row-val" id="processing-content">—</span></div>
+          <div class="order-row"><span class="order-row-key">合计</span><span class="order-row-val" id="processing-total">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3B Success -->
+    <div id="state-3b" style="display:none">
+      <div class="state-page">
+        <div class="state-icon success">✅</div>
+        <div class="state-title">增购成功</div>
+        <div class="state-desc">
+          <p>新席位已激活，可立即在席位管理中分配</p>
+          <p id="success-points-desc">100,000 点已到账，可在点数管理中查看</p>
+        </div>
+        <div class="order-block">
+          <div class="order-block-title">订单信息</div>
+          <div class="order-row"><span class="order-row-key">订单号</span><span class="order-row-val">LG-CN-20260615-EXP-001</span></div>
+          <div class="order-row"><span class="order-row-key">下单时间</span><span class="order-row-val">2026-06-15 14:30（GMT+8）</span></div>
+          <div class="order-row"><span class="order-row-key">增购内容</span><span class="order-row-val" id="success-content">—</span></div>
+          <div class="order-row">
+            <span class="order-row-key">席位</span>
+            <span class="order-row-val" id="success-seats">10席 <span class="arrow">→</span> <span class="new">13席</span>（有效至 2027-06-15）</span>
+          </div>
+          <div class="order-row" id="success-points-row">
+            <span class="order-row-key">点数</span>
+            <span class="order-row-val">38,200 点 <span class="arrow">→</span> <span class="new" id="success-points-new">138,200 点</span>（本月剩余）</span>
+          </div>
+          <div class="order-row"><span class="order-row-key">支付</span><span class="order-row-val" id="success-total">¥2,297.00（含税）</span></div>
+          <div class="order-row"><span class="order-row-key">支付方式</span><span class="order-row-val">企业支付宝</span></div>
+        </div>
+        <div class="state-actions">
+          <div class="state-actions-row">
+            <button class="btn btn-primary" style="height:40px;padding:0 20px">前往席位管理</button>
+            <button class="btn btn-outline" style="height:40px;padding:0 20px">查看点数</button>
+          </div>
+          <a href="#" class="text-link">查看订单详情 →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3C Pending bank -->
+    <div id="state-3c" style="display:none">
+      <div class="state-page">
+        <div class="state-icon pending">🕒</div>
+        <div class="state-title">付款信息待确认</div>
+        <div class="state-desc">
+          <p>我们已收到您的转账通知，正在等待银行流水回传</p>
+          <p>通常 1–3 个工作日内完成确认，确认后席位和点数立即激活</p>
+        </div>
+        <div class="order-block">
+          <div class="order-block-title">订单信息</div>
+          <div class="order-row"><span class="order-row-key">订单号</span><span class="order-row-val">LG-CN-20260615-EXP-001</span></div>
+          <div class="order-row"><span class="order-row-key">下单时间</span><span class="order-row-val">2026-06-15 14:30（GMT+8）</span></div>
+          <div class="order-row"><span class="order-row-key">增购内容</span><span class="order-row-val" id="pending-content">—</span></div>
+          <div class="order-row"><span class="order-row-key">合计</span><span class="order-row-val" id="pending-total">—</span></div>
+          <div class="order-row"><span class="order-row-key">支付方式</span><span class="order-row-val">对公银行转账</span></div>
+        </div>
+        <div class="state-actions">
+          <div class="state-actions-row">
+            <button class="btn btn-ghost" style="height:38px" onclick="copyText('LG-CN-20260615-EXP-001')">复制订单号</button>
+            <button class="btn btn-outline" style="height:38px">联系客服</button>
+          </div>
+        </div>
+        <div class="state-receipt">
+          如超过 3 个工作日未确认，请联系客服并提供汇款凭证
+        </div>
+      </div>
+    </div>
+
+    <!-- Failed state -->
+    <div id="state-failed" style="display:none">
+      <div class="state-page">
+        <div class="state-icon failed">❌</div>
+        <div class="state-title">支付未完成</div>
+        <div class="state-desc">
+          <p>未产生扣款，您可以重新支付或更换支付方式</p>
+          <p>订单将保留 14 天</p>
+        </div>
+        <div class="order-block">
+          <div class="order-block-title">订单信息</div>
+          <div class="order-row"><span class="order-row-key">订单号</span><span class="order-row-val">LG-CN-20260615-EXP-001</span></div>
+          <div class="order-row"><span class="order-row-key">下单时间</span><span class="order-row-val">2026-06-15 14:30（GMT+8）</span></div>
+          <div class="order-row"><span class="order-row-key">增购内容</span><span class="order-row-val" id="failed-content">—</span></div>
+          <div class="order-row"><span class="order-row-key">合计</span><span class="order-row-val" id="failed-total">—</span></div>
+        </div>
+        <div class="state-actions">
+          <div class="state-actions-row">
+            <button class="btn btn-primary" style="height:40px;padding:0 20px" onclick="goStep(3)">重新支付</button>
+            <button class="btn btn-ghost" style="height:40px;padding:0 20px" onclick="goStep(1)">返回修改配置</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /page-step3 -->
+
+<!-- ══════════════════════════════════════════════════ MODALS ══ -->
+<!-- Agreement modal -->
+<div class="modal-overlay" id="modal-agreement">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Lingee 服务订阅协议</span>
+      <button class="modal-close" onclick="closeModal('modal-agreement')">×</button>
+    </div>
+    <div class="modal-body">
+      <h3>1. 服务说明</h3>
+      <p>Lingee（灵基）翻译管理平台（以下简称"本平台"）由金蝶软件（中国）有限公司运营。企业客户在完成注册、付款后，即可按照所购套餐范围使用本平台服务。</p>
+      <h3>2. 席位与账号</h3>
+      <p>每个席位对应一个独立的成员账号。超出席位数量后新增账号将被自动暂停。企业管理员可随时在后台调整席位分配，但不得超过已购买总席位数。</p>
+      <h3>3. 点数规则</h3>
+      <p>点数分为"付费点数"和"赠送点数"。付费点数随合同有效期，不结转；赠送点数当月有效，到期清零，仅可用于生产环境。增购点数与订阅合同同步到期。</p>
+      <h3>4. 费用与退款</h3>
+      <p>席位增购费用按剩余订阅天数 Pro-rata 计算，含税。点数包一经购买，不支持退款、退点或转让。支付完成后 1 分钟内完成激活。</p>
+      <h3>5. 服务变更与终止</h3>
+      <p>金蝶保留在提前 30 天通知的情况下调整服务规格或价格的权利。如因平台原因导致服务中断，将按实际中断时长折算延长服务期。</p>
+      <h3>6. 争议解决</h3>
+      <p>本协议适用中华人民共和国法律，争议由深圳市南山区人民法院管辖。</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="closeModal('modal-agreement')">我已阅读</button>
+    </div>
+  </div>
+</div>
+
+<!-- Notice modal -->
+<div class="modal-overlay" id="modal-notice">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">购买须知</span>
+      <button class="modal-close" onclick="closeModal('modal-notice')">×</button>
+    </div>
+    <div class="modal-body">
+      <h3>增购席位须知</h3>
+      <p>• 席位增购采用 Pro-rata（按天计费）方式，费用 = 新增席位数 × ¥99 × 剩余天数 / 365<br />• 新席位在支付确认后即时生效<br />• 席位有效期与当前订阅周期一致</p>
+      <h3>增购点数须知</h3>
+      <p>• 最低购买 10,000 点（1 万点），步进 10,000<br />• 点数到账后即时可用，有效期至合同到期日<br />• 点数不可退款、不可结转、不可兑换<br />• 付费点数可用于生产环境和沙箱环境</p>
+      <h3>支付须知</h3>
+      <p>• 仅支持企业付款账户，个人账户付款将原路退回<br />• 对公转账请务必填写汇款备注中的订单号<br />• 银行转账 1–3 工作日确认，支付宝即时确认</p>
+      <h3>发票须知</h3>
+      <p>• 增值税专用发票将在支付确认后自动开具<br />• 请确保企业信息（营业执照）已在平台中完善</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="closeModal('modal-notice')">我已阅读</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ DEMO PANEL ══ -->
+<div class="demo-panel">
+  <div class="demo-menu" id="demo-menu">
+    <div class="demo-menu-header">🎮 Demo 快速导航</div>
+    <button class="demo-item" onclick="goPage('step1')"><span>⚙️</span> Step 1：配置</button>
+    <button class="demo-item" onclick="goPagePayTab('alipay')"><span>💳</span> Step 2：确认支付（支付宝）</button>
+    <button class="demo-item" onclick="goPagePayTab('bank')"><span>🏦</span> Step 2：确认支付（对公转账）</button>
+    <button class="demo-item" onclick="goPage('step3a')"><span>⏳</span> Step 3A：开通中</button>
+    <button class="demo-item" onclick="goPage('step3b')"><span>✅</span> Step 3B：增购成功</button>
+    <button class="demo-item" onclick="goPage('step3c')"><span>🕒</span> Step 3C：待收款确认</button>
+    <button class="demo-item" onclick="goPage('failed')"><span>❌</span> 支付失败</button>
+  </div>
+  <button class="demo-toggle" onclick="toggleDemo()">🎮 Demo 导航 ▾</button>
+</div>
+
+<script>
+// ──────────────────────────────────────────────────────────────
+// STATE
+// ──────────────────────────────────────────────────────────────
+const SEAT_PRICE     = 99;        // ¥/seat/month incl. tax
+const REMAINING_DAYS = 365;
+const DAYS_IN_YEAR   = 365;
+const CURRENT_SEATS  = 10;
+const CURRENT_POINTS = 38200;
+
+let seatQty   = 0;
+let pointsQty = 0;  // in 万点 (10k points)
+
+// ──────────────────────────────────────────────────────────────
+// CALCULATION HELPERS
+// ──────────────────────────────────────────────────────────────
+function calcSeatCost(n) {
+  return n * SEAT_PRICE * 12 * (REMAINING_DAYS / DAYS_IN_YEAR);
+}
+
+function calcPointsCost(wan) {
+  const pts = wan * 10000;
+  if (pts <= 0) return 0;
+  let cost = 0;
+  const t1 = Math.min(pts, 500000);
+  cost += t1 * 0.20;
+  if (pts > 500000) {
+    const t2 = Math.min(pts - 500000, 500000);
+    cost += t2 * 0.19;
+  }
+  if (pts > 1000000) {
+    cost += (pts - 1000000) * 0.18;
+  }
+  return cost;
+}
+
+function activeTier(wan) {
+  if (wan <= 0)   return 0;
+  if (wan <= 50)  return 1;
+  if (wan <= 100) return 2;
+  return 3;
+}
+
+function fmt(n) {
+  return '¥' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+function fmtNum(n) {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+// ──────────────────────────────────────────────────────────────
+// UI UPDATES
+// ──────────────────────────────────────────────────────────────
+function updateUI() {
+  const seatCost   = calcSeatCost(seatQty);
+  const pointsCost = calcPointsCost(pointsQty);
+  const total      = seatCost + pointsCost;
+
+  // --- Seat section ---
+  const seatsTotal = document.getElementById('seats-total-label');
+  const seatMid    = document.getElementById('seat-mid-label');
+  const seatCostHint = document.getElementById('seat-cost-hint');
+  const seatCostVal  = document.getElementById('seat-cost-val');
+
+  if (seatQty > 0) {
+    if (seatsTotal) seatsTotal.innerHTML = `共 <strong>${CURRENT_SEATS + seatQty} 席</strong>`;
+    if (seatMid)   seatMid.textContent = `当前 ${CURRENT_SEATS} 席 → 增购后 ${CURRENT_SEATS + seatQty} 席`;
+    if (seatCostHint) seatCostHint.style.visibility = 'visible';
+    if (seatCostVal)  seatCostVal.textContent = fmt(calcSeatCost(seatQty));
+  } else {
+    if (seatsTotal) seatsTotal.innerHTML = '—';
+    if (seatMid)   seatMid.textContent = `当前 ${CURRENT_SEATS} 席`;
+    if (seatCostHint) seatCostHint.style.visibility = 'hidden';
+  }
+
+  // --- Points section ---
+  const ptsResult  = document.getElementById('points-result-label');
+  const ptsAmount  = document.getElementById('points-result-amount');
+  const ptsRow     = document.getElementById('points-result-row');
+  const pts = pointsQty * 10000;
+
+  if (pointsQty > 0) {
+    const tierNum = activeTier(pointsQty);
+    const rateMap = {1:'¥0.20',2:'¥0.19',3:'¥0.18'};
+    if (ptsResult) ptsResult.textContent = `${fmtNum(pts)} 点 × ${rateMap[tierNum]}/点`;
+    if (ptsAmount) ptsAmount.textContent = fmt(pointsCost);
+    if (ptsRow)    ptsRow.style.visibility = 'visible';
+  } else {
+    if (ptsResult) ptsResult.textContent = '请输入购买数量';
+    if (ptsAmount) ptsAmount.textContent = '¥0';
+    if (ptsRow)    ptsRow.style.visibility = 'hidden';
+  }
+
+  // Tier highlight removed — tiers are display-only
+
+  // --- Summary ---
+  updateSummary(seatCost, pointsCost, total);
+}
+
+function updateSummary(seatCost, pointsCost, total) {
+  const btnCO = document.getElementById('btn-checkout');
+  const hasItems = seatQty > 0 || pointsQty > 0;
+  const pts = pointsQty * 10000;
+
+  // helpers
+  const dash = '<span class="sv dim">—</span>';
+  const fmtSv = (v) => `<span class="sv">${v}</span>`;
+
+  // step 1 summary
+  const s1seats     = document.getElementById('sl-seats');
+  const s1points    = document.getElementById('sl-points');
+  const s1seatCost  = document.getElementById('sl-seat-cost');
+  const s1pointCost = document.getElementById('sl-point-cost');
+  const totalEl     = document.getElementById('summary-total');
+
+  if (s1seats)     { s1seats.innerHTML     = seatQty > 0   ? `+${seatQty} 席`       : '—'; s1seats.className     = seatQty > 0   ? 'sv' : 'sv dim'; }
+  if (s1points)    { s1points.innerHTML    = pointsQty > 0 ? `${fmtNum(pts)} 点`    : '—'; s1points.className    = pointsQty > 0 ? 'sv' : 'sv dim'; }
+  if (s1seatCost)  { s1seatCost.innerHTML  = seatQty > 0   ? fmt(seatCost)          : '—'; s1seatCost.className  = seatQty > 0   ? 'sv' : 'sv dim'; }
+  if (s1pointCost) { s1pointCost.innerHTML = pointsQty > 0 ? fmt(pointsCost)        : '—'; s1pointCost.className = pointsQty > 0 ? 'sv' : 'sv dim'; }
+  if (totalEl)     totalEl.textContent   = fmt(total);
+  if (btnCO)       btnCO.disabled        = !hasItems;
+
+  // step 2 summary (sync)
+  const s2seats     = document.getElementById('sl-seats-2');
+  const s2points    = document.getElementById('sl-points-2');
+  const s2seatCost  = document.getElementById('sl-seat-cost-2');
+  const s2pointCost = document.getElementById('sl-point-cost-2');
+  const total2El    = document.getElementById('summary-total-2');
+  const btnPay      = document.getElementById('btn-pay');
+
+  if (s2seats)     { s2seats.innerHTML     = seatQty > 0   ? `+${seatQty} 席`       : '—'; s2seats.className     = seatQty > 0   ? 'sum2-line-value' : 'sum2-line-value dim'; }
+  if (s2points)    { s2points.innerHTML    = pointsQty > 0 ? `${fmtNum(pts)} 点`    : '—'; s2points.className    = pointsQty > 0 ? 'sum2-line-value' : 'sum2-line-value dim'; }
+  if (s2seatCost)  { s2seatCost.innerHTML  = seatQty > 0   ? fmt(seatCost)          : '—'; s2seatCost.className  = 'sum2-product-price'; }
+  if (s2pointCost) { s2pointCost.innerHTML = pointsQty > 0 ? fmt(pointsCost)        : '—'; s2pointCost.className = 'sum2-line-value'; }
+  const ptsCostLine = document.getElementById('pts-cost-line-2');
+  if (ptsCostLine) ptsCostLine.style.display = pointsQty > 0 ? 'flex' : 'none';
+  if (total2El)    total2El.textContent  = fmt(total);
+  if (btnPay) {
+    btnPay.textContent = `确认支付 ${fmt(total)}`;
+    btnPay.disabled = !document.getElementById('agree-checkbox')?.checked;
+  }
+}
+
+function submitOrder() {
+  goStep(3);
+}
+
+function updatePayBtn() {
+  const agreed  = document.getElementById('agree-checkbox')?.checked;
+  const btnSubmit = document.getElementById('btn-submit-order');
+  if (btnSubmit) btnSubmit.disabled = !agreed;
+}
+
+// ──────────────────────────────────────────────────────────────
+// SEAT & POINTS CONTROLS
+// ──────────────────────────────────────────────────────────────
+function changeSeats(delta) {
+  seatQty = Math.max(0, seatQty + delta);
+  document.getElementById('seats-input').value = seatQty;
+  updateUI();
+}
+
+function onSeatInput() {
+  const v = parseInt(document.getElementById('seats-input').value) || 0;
+  seatQty = Math.max(0, v);
+  document.getElementById('seats-input').value = seatQty;
+  updateUI();
+}
+
+function changePoints(delta) {
+  pointsQty = Math.max(0, pointsQty + delta);
+  document.getElementById('points-input').value = pointsQty;
+  updateUI();
+}
+
+function onPointsInput() {
+  const v = parseInt(document.getElementById('points-input').value) || 0;
+  pointsQty = Math.max(0, v);
+  document.getElementById('points-input').value = pointsQty;
+  updateUI();
+}
+
+// ──────────────────────────────────────────────────────────────
+// NAVIGATION
+// ──────────────────────────────────────────────────────────────
+let currentStep = 1;
+
+function goStep(n) {
+  currentStep = n;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  if (n === 1) document.getElementById('page-step1').classList.add('active');
+  else if (n === 2) document.getElementById('page-step2').classList.add('active');
+  else if (n === 3) {
+    document.getElementById('page-step3').classList.add('active');
+    // 生成订单号
+    const el = document.getElementById('order-num');
+    if (el && el.textContent === '—') {
+      const d = new Date();
+      const ds = d.getFullYear().toString() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
+      const rnd = String(Math.floor(Math.random()*900000)+100000);
+      const num = 'LG-' + ds + '-' + rnd;
+      el.textContent = num;
+      const ref = document.getElementById('bank-order-ref');
+      if (ref) ref.textContent = num;
+    }
+    // 同步 step3 摘要
+    syncStep3Summary();
+    // 启动二维码倒计时
+    startQRCountdown();
+  }
+  else if (n === 4) {
+    document.getElementById('page-step4').classList.add('active');
+  }
+  updateStepper(n);
+}
+
+function syncStep3Summary() {
+  const ids = ['seats','points','seat-cost','point-cost'];
+  ids.forEach(id => {
+    const s2 = document.getElementById('sl-' + id + '-2');
+    const s3 = document.getElementById('sl-' + id + '-3');
+    if (s2 && s3) { s3.innerHTML = s2.innerHTML; s3.className = s2.className; }
+  });
+  const t2 = document.getElementById('summary-total-2');
+  const t3 = document.getElementById('summary-total-3');
+  if (t2 && t3) t3.textContent = t2.textContent;
+}
+
+function updateStepper(active) {
+  for (let i = 1; i <= 4; i++) {
+    const item = document.getElementById('nav-step' + i);
+    const num  = document.getElementById('step-num-' + i);
+    if (!item) continue;
+    item.classList.remove('active', 'done');
+    if (i < active)       { item.classList.add('done'); if(num) num.innerHTML='<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="2,6 5,9 10,3"/></svg>'; }
+    else if (i === active){ item.classList.add('active'); if(num) num.textContent = i; }
+    else                  { if(num) num.textContent = i; }
+  }
+}
+
+function showState(state) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-step4').classList.add('active');
+  ['3a','3b','3c','failed'].forEach(s => {
+    document.getElementById('state-' + s).style.display = 'none';
+  });
+
+  const seatCost   = calcSeatCost(seatQty);
+  const pointsCost = calcPointsCost(pointsQty);
+  const total      = seatCost + pointsCost;
+  const pts        = pointsQty * 10000;
+
+  let contentStr = '';
+  if (seatQty > 0 && pointsQty > 0)
+    contentStr = `专业版 +${seatQty}席（pro-rata）· ${fmtNum(pts)}点`;
+  else if (seatQty > 0)
+    contentStr = `专业版 +${seatQty}席（pro-rata ${REMAINING_DAYS}天）`;
+  else if (pointsQty > 0)
+    contentStr = `${fmtNum(pts)} 点数包`;
+  else
+    contentStr = '专业版 +3席（pro-rata）· 100,000点'; // demo default
+
+  const totalStr = total > 0 ? fmt(total) + '（含税）' : '¥2,297.00（含税）';
+
+  // patch all content/total fields
+  ['processing','pending','failed'].forEach(prefix => {
+    const c = document.getElementById(prefix + '-content');
+    const t = document.getElementById(prefix + '-total');
+    if (c) c.textContent = contentStr;
+    if (t) t.textContent = totalStr;
+  });
+
+  // Success specific
+  const sc = document.getElementById('success-content');
+  const st = document.getElementById('success-total');
+  if (sc) sc.textContent = contentStr;
+  if (st) st.textContent = totalStr;
+
+  const newSeats = CURRENT_SEATS + (seatQty > 0 ? seatQty : 3);
+  const seatsEl  = document.getElementById('success-seats');
+  if (seatsEl) seatsEl.innerHTML = `${CURRENT_SEATS}席 <span class="arrow">→</span> <span class="new">${newSeats}席</span>（有效至 2027-06-15）`;
+
+  const newPoints = CURRENT_POINTS + (pointsQty > 0 ? pts : 100000);
+  const ptsNewEl  = document.getElementById('success-points-new');
+  if (ptsNewEl) ptsNewEl.textContent = fmtNum(newPoints) + ' 点';
+  const ptsDescEl = document.getElementById('success-points-desc');
+  if (ptsDescEl) ptsDescEl.textContent = `${fmtNum(pointsQty > 0 ? pts : 100000)} 点已到账，可在点数管理中查看`;
+  const ptsRow = document.getElementById('success-points-row');
+  if (ptsRow) ptsRow.style.display = (pointsQty > 0 || state === '3b') ? 'flex' : 'none';
+
+  const el = document.getElementById('state-' + state);
+  if (el) el.style.display = 'block';
+}
+
+// ──────────────────────────────────────────────────────────────
+// DEMO NAVIGATION SHORTCUTS
+// ──────────────────────────────────────────────────────────────
+function goPage(page) {
+  closeDemo();
+  if (page === 'step1') { goStep(1); return; }
+  if (page === 'step2') { goStep(2); return; }
+  if (page === 'step3') { goStep(3); return; }
+  if (page === 'step3a') { updateStepper(4); showState('3a'); return; }
+  if (page === 'step3b') { updateStepper(4); showState('3b'); return; }
+  if (page === 'step3c') { updateStepper(4); showState('3c'); return; }
+  if (page === 'step4a') { updateStepper(4); showState('3a'); return; }
+  if (page === 'step4b') { updateStepper(4); showState('3b'); return; }
+  if (page === 'step4c') { updateStepper(4); showState('3c'); return; }
+  if (page === 'failed') { updateStepper(4); showState('failed'); return; }
+}
+
+function goPagePayTab(tab) {
+  closeDemo();
+  goStep(3);
+  switchPayTab(tab);
+}
+
+// ──────────────────────────────────────────────────────────────
+// PAY FLOW
+// ──────────────────────────────────────────────────────────────
+function doAlipayPay() {
+  updateStepper(4);
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-step4').classList.add('active');
+  showState('3a');
+  // Auto transition to success after 1.5s
+  setTimeout(() => { showState('3b'); }, 1500);
+}
+
+let qrTimer = null;
+let qrSeconds = 300;
+
+function startQRCountdown() {
+  clearInterval(qrTimer);
+  qrSeconds = 300;
+  updateQRCountdown();
+  qrTimer = setInterval(() => {
+    qrSeconds--;
+    updateQRCountdown();
+    if (qrSeconds <= 0) {
+      clearInterval(qrTimer);
+      const el = document.getElementById('qr-countdown');
+      if (el) el.textContent = '已过期';
+    }
+  }, 1000);
+}
+
+function updateQRCountdown() {
+  const el = document.getElementById('qr-countdown');
+  if (!el) return;
+  const m = String(Math.floor(qrSeconds / 60)).padStart(2, '0');
+  const s = String(qrSeconds % 60).padStart(2, '0');
+  el.textContent = m + ':' + s;
+}
+
+function refreshQR() {
+  const box = document.getElementById('qr-box');
+  if (!box) return;
+  box.style.opacity = '0.4';
+  setTimeout(() => { box.style.opacity = '1'; }, 600);
+  startQRCountdown();
+}
+
+function copyBankInfo() {
+  const ref = document.getElementById('bank-order-ref')?.textContent || '';
+  const text = `账户名：金蝶软件（中国）有限公司\n账号：4400 1234 5678 9012\n开户行：中国建设银行 深圳南山支行\n转账备注：${ref}`;
+  navigator.clipboard.writeText(text).then(() => {
+    const done = document.getElementById('copy-done');
+    if (done) { done.style.display = 'inline-flex'; setTimeout(() => { done.style.display = 'none'; }, 2000); }
+  });
+}
+
+function switchPayTab(tab) {
+  document.getElementById('tab-alipay').classList.toggle('active', tab === 'alipay');
+  document.getElementById('tab-bank').classList.toggle('active', tab === 'bank');
+  document.getElementById('panel-alipay').classList.toggle('active', tab === 'alipay');
+  document.getElementById('panel-bank').classList.toggle('active', tab === 'bank');
+}
+
+// ──────────────────────────────────────────────────────────────
+// MODAL
+// ──────────────────────────────────────────────────────────────
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+});
+
+// ──────────────────────────────────────────────────────────────
+// DEMO PANEL
+// ──────────────────────────────────────────────────────────────
+function toggleDemo() {
+  document.getElementById('demo-menu').classList.toggle('open');
+}
+function closeDemo() {
+  document.getElementById('demo-menu').classList.remove('open');
+}
+
+// ──────────────────────────────────────────────────────────────
+// COPY
+// ──────────────────────────────────────────────────────────────
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('已复制到剪贴板');
+  }).catch(() => {
+    showToast('复制失败，请手动复制');
+  });
+}
+
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = `
+      position:fixed; bottom:80px; left:50%; transform:translateX(-50%);
+      background:#111827; color:#fff; padding:8px 16px; border-radius:8px;
+      font-size:13px; z-index:9999; opacity:0; transition:opacity 0.2s;
+      pointer-events:none; white-space:nowrap;
+    `;
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  setTimeout(() => { t.style.opacity = '0'; }, 2000);
+}
+
+// ──────────────────────────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────────────────────────
+// Default: start at zero
+(function init() {
+  seatQty   = 0;
+  pointsQty = 0;
+  document.getElementById('seats-input').value  = 0;
+  document.getElementById('points-input').value = 0;
+  updateUI();
+  updateStepper(1);
+})();
+
+/* cursor-tracking glow on primary buttons */
+document.addEventListener('pointermove', function(e) {
+  var btn = e.target.closest && e.target.closest('.btn-primary');
+  if (!btn) return;
+  var r = btn.getBoundingClientRect();
+  btn.style.setProperty('--gx', ((e.clientX - r.left) / r.width * 100) + '%');
+  btn.style.setProperty('--gy', ((e.clientY - r.top) / r.height * 100) + '%');
+});
+</script>
+</body>
+</html>
