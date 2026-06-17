@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>灵基国内购买 · 全量走查（业务 → 系统 → 准备）</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--pri:#6C5CE7;--ink:#21242F;--muted:#6B7080;--line:#E7E8F0;--bg:#F4F3FB;--card:#fff;--ok:#16A34A;--amber:#E8820C;--red:#DC2626;--blue:#2563EB}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6}
+.layout{display:grid;grid-template-columns:240px 1fr;max-width:1280px;margin:0 auto}
+.nav{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:24px 16px;border-right:1px solid var(--line);background:#fff}
+.nav h3{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:16px 0 6px}
+.nav h3:first-child{margin-top:0}
+.nav a{display:block;font-size:12.5px;color:#475569;text-decoration:none;padding:5px 9px;border-radius:7px}
+.nav a:hover{background:var(--bg);color:var(--pri)}
+.brand{font-size:15px;font-weight:800;color:var(--pri);margin-bottom:14px}
+.content{padding:34px 40px 90px;min-width:0}
+h1{font-size:26px;font-weight:800;letter-spacing:-.3px}
+.lead{color:var(--muted);font-size:13.5px;margin:8px 0 8px;max-width:860px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:20px}
+section{scroll-margin-top:20px;margin-bottom:18px}
+.sec-h{font-size:19px;font-weight:800;margin:30px 0 4px;padding-top:14px;border-top:2px solid #ECEAFB;display:flex;align-items:center;gap:9px}
+.sec-h .n{width:26px;height:26px;border-radius:8px;background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}
+.sub-h{font-size:15px;font-weight:800;margin:20px 0 8px;color:#312E81}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:14px;box-shadow:0 3px 14px rgba(76,60,180,.04)}
+p{margin-bottom:8px}
+ul{margin:6px 0 6px 2px;list-style:none}
+li{padding:4px 0 4px 18px;position:relative;font-size:13px;color:#3D414E}
+li::before{content:'▸';position:absolute;left:0;color:var(--pri)}
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0}
+th,td{text-align:left;padding:8px 11px;border-bottom:1px solid #F0F0F6;vertical-align:top}
+th{background:#FAFAFE;font-weight:700;color:#475569;font-size:11.5px}
+code{background:#F3F1FE;color:#4338CA;border-radius:4px;padding:1px 6px;font-family:'SF Mono',Menlo,monospace;font-size:11.5px}
+.tag{font-size:10px;font-weight:700;border-radius:5px;padding:2px 7px;white-space:nowrap}
+.t-sot{background:#ECFDF3;color:#166534;border:1px solid #86EFAC}
+.t-kdpay{background:#EEF2FF;color:#4338CA;border:1px solid #C7CBF5}
+.t-ext{background:#FFF4E6;color:#9A3412;border:1px solid #FDBA74}
+.pill{font-size:10.5px;font-weight:700;border-radius:6px;padding:2px 8px}
+.p0{background:#FEE2E2;color:#991B1B}.p1{background:#FFEDD5;color:#9A3412}.p2{background:#DBEAFE;color:#1E40AF}.done{background:#DCFCE7;color:#166534}
+.note{font-size:12px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:11px 14px;color:#92400E;margin:8px 0}
+.note.blue{background:#EEF2FF;border-color:#C7D2FE;color:#3730A3}
+.note.green{background:#F0FDF4;border-color:#BBF7D0;color:#166534}
+.links a{display:inline-block;font-size:12px;font-weight:600;color:var(--pri);text-decoration:none;border:1px solid #D9D6F5;border-radius:8px;padding:5px 11px;margin:3px 6px 3px 0}
+.links a:hover{background:var(--bg)}
+.flow{font-size:12px;color:#475569;background:#FAFAFE;border:1px solid var(--line);border-radius:9px;padding:12px 14px;line-height:2;font-family:'SF Mono',Menlo,monospace}
+@media(max-width:880px){.layout{grid-template-columns:1fr}.nav{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="nav">
+    <div class="brand">灵基国内购买 · 走查</div>
+    <h3>0 概览</h3>
+    <a href="#overview">业务背景与目标</a>
+    <a href="#docs">配套文档导航</a>
+    <a href="#diff">与海外版的差异</a>
+    <h3>1 业务设计</h3>
+    <a href="#biz-pricing">定价与产品规则</a>
+    <a href="#biz-units">点数规则</a>
+    <a href="#biz-journey">购买旅程</a>
+    <a href="#biz-states">订单状态 & 状态页</a>
+    <a href="#biz-contract">合同与协议</a>
+    <a href="#biz-compliance">合规要求</a>
+    <h3>2 系统设计</h3>
+    <a href="#sys-arch">架构与边界</a>
+    <a href="#sys-data">数据模型</a>
+    <a href="#sys-payment">支付与对账</a>
+    <a href="#sys-invoice">发票</a>
+    <a href="#sys-provision">开通与履约</a>
+    <h3>3 准备工作</h3>
+    <a href="#prep-payment">金蝶云平台支付能力配置</a>
+    <a href="#prep-legal">法律/财税</a>
+    <a href="#prep-dev">研发交接</a>
+    <a href="#prep-todo">待办与决策</a>
+  </nav>
+
+  <main class="content">
+    <h1>灵基国内购买 · 全量走查</h1>
+    <p class="lead">把国内版的业务背景、产品规则、系统边界、合规要求串成一条主线，作为后续架构、数据模型、后台设计的总纲。</p>
+    <p class="meta">经营主体：金蝶软件（中国）有限公司 · 公有云 SaaS · B2B 国内销售 · 金蝶云平台收款（企业支付宝 + 对公银行转账）</p>
+
+    <section id="overview">
+      <div class="sec-h"><span class="n">0</span>业务背景与目标</div>
+      <div class="card">
+        <p><b>做什么：</b>灵基（Lingee）国内自助购买站点 —— 选产品 → 填信息 → 下单支付 → 自动开通环境。</p>
+        <p><b>核心诉求：</b>① 客户体验顺畅、自助完成；② 支付与开票合规；③ 支付后自动开通产品；④ 金蝶云平台处理收款。</p>
+        <ul>
+          <li><b>两个版本：</b>专业版（自助，¥99/席/月，起售 5 席）、高级版（面议，起售 100 席，多 AI 财务部 + CEO 办公室治理能力）</li>
+          <li><b>点数：</b>阶梯定价 ¥0.18–0.20/点，最小 1 万点；每席每月赠送 500 点（仅生产环境，当月有效）</li>
+          <li><b>每套产品：</b>1 生产租户 + 1 沙箱租户（隔离），公有云；可连客户私有部署 ERP（星瀚/星空）</li>
+          <li><b>收款：</b>金蝶云平台（支付能力，封装企业支付宝 + 对公银行转账），人民币定价与结算</li>
+          <li><b>发票：</b>LBC 调用 KBC 开票接口，KBC 开具增值税电子发票，LBC 存储并推送客户</li>
+        </ul>
+      </div>
+      <div class="note blue"><b>主数据源（SoT）原则：</b>灵基商业化后台（LBC）是订单/订阅/席位/点数/权益的<b>权威源</b>；金蝶云平台是支付执行层（支付结果/流水以其回调为准）；KBC 是 SLG 业务系统与金蝶财务系统（开票/收入确认/ERP核算）的权威源；TID（客户主数据）与企业认证由金蝶云账号体系管理；金蝶云平台（企业身份）提供企业认证能力（LBC 只引用，不重复做认证）。</div>
+    </section>
+
+    <section id="docs">
+      <div class="sub-h">配套文档导航</div>
+      <div class="card links">
+        <a href="lingee-upsell.html">🛒 国内增购原型</a>
+        <a href="lingee-cn-architecture.html">🏗️ 架构与时序</a>
+        <a href="lingee-data-model.html">🗂️ 数据模型 v3（通用版）</a>
+        <a href="lingee-cn-datamodel.html">🗂️ 数据模型（国内差异）</a>
+        <a href="lingee-cn-interfaces.html">🔌 外部系统接口需求</a>
+        <a href="lingee-cn-orderstates.html">🔄 订单状态机</a>
+        <a href="lingee-admin-cn.html">🖥️ 后台管理（国内）</a>
+        <a href="lingee-cn-todolist.html">✅ 待办清单</a>
+      </div>
+      <p class="note blue" style="margin-top:10px"><b>与海外版的关系：</b>国内版与海外版分开部署、分开运营。核心业务实体（线索/商机/客户/订单/租户/工单等）设计保持一致，差异仅在支付层（金蝶云平台（支付能力）vs Stripe）、税务层（KBC 开票 vs MyInvois）、合规层（企业认证由金蝶云平台（金蝶云账号体系）提供 vs 自建）、货币（CNY vs USD/MYR）。</p>
+    </section>
+
+    <section id="diff">
+      <div class="sub-h">与海外版的核心差异</div>
+      <div class="card">
+        <table>
+          <tr><th>模块</th><th>海外版（Overseas）</th><th>国内版（CN）</th></tr>
+          <tr><td>支付网关</td><td>Stripe（卡/FPX/GrabPay/Apple Pay）</td><td>金蝶云平台（企业支付宝 + 对公银行转账）</td></tr>
+          <tr><td>支付回调</td><td>Stripe Webhook（checkout.session.completed）</td><td>金蝶云平台支付 notify 回调</td></tr>
+          <tr><td>货币</td><td>USD 定价，MYR 结算</td><td>CNY 定价与结算</td></tr>
+          <tr><td>发票</td><td>Stripe Invoicing + MyInvois（马来合规）</td><td>LBC 调 KBC 开票接口，开增值税电子发票</td></tr>
+          <tr><td>企业认证</td><td>前端收集，LBC 自建合规校验</td><td>金蝶云平台（企业身份）提供，LBC 引用</td></tr>
+          <tr><td>合规风控</td><td>OFAC/制裁名单/出口管制/Stripe Radar</td><td>本地黑名单（欺诈封禁）+ 基础反欺诈</td></tr>
+          <tr><td>受限清单</td><td>国家名单（红/灰/FATF）+ 本地黑名单</td><td>本地黑名单（仅欺诈/拒付封禁）</td></tr>
+          <tr><td>协议管理</td><td>LBC 自存协议正文</td><td>金蝶法务系统存储正文，LBC 引用链接</td></tr>
+          <tr><td>拒付（Chargeback）</td><td>有（Stripe charge.dispute.*）</td><td>无（支付宝/银行转账无此机制）</td></tr>
+          <tr><td>经营主体</td><td>KINGDEE INTERNATIONAL (MALAYSIA) SDN. BHD.</td><td>金蝶软件（中国）有限公司</td></tr>
+          <tr><td>高级版合同</td><td>未设计</td><td>未设计</td></tr>
+          <tr><td>电子签</td><td>不涉及，同意即签约</td><td>通过金蝶云平台或 KBC 提供的接口（已集成法大大/上上签），LBC 不直接对接</td></tr>
+        </table>
+        <p class="note green" style="margin-top:10px"><b>保持一致的部分：</b>订单状态机（核心 9 态 + 国内扩展 pending_activation，key 与海外完全相同）· 数据模型核心实体（ORDER/SUBSCRIPTION/TENANT/LEAD/OPPORTUNITY/SUPPORT_REQUEST 等）· 枚举字典命名 · TID/SN 前置闸 · 退款流程 · 双人审批模型 · AUDIT_LOG · 同意存证逻辑。</p>
+      </div>
+    </section>
+
+    <section id="biz-pricing">
+      <div class="sec-h"><span class="n">1</span>业务设计</div>
+      <div class="sub-h">1.1 定价与产品规则</div>
+      <div class="card">
+        <table>
+          <tr><th>项</th><th>专业版</th><th>高级版</th></tr>
+          <tr><td>定价</td><td>¥99/席/月（¥1,188/席/年）</td><td>面议</td></tr>
+          <tr><td>起售席位</td><td>5</td><td>100</td></tr>
+          <tr><td>订阅周期</td><td>按年订阅</td><td>合同约定</td></tr>
+          <tr><td>AI 财务部 / CEO 办公室</td><td>可 @ 使用智能体，<b>无</b>价值分析与运行治理</td><td><b>完整模块</b>含治理</td></tr>
+          <tr><td>购买方式</td><td>自助（购买页）</td><td>联系销售 quote-to-cash</td></tr>
+        </table>
+        <p class="note">所有价格为<b>含税 CNY</b>（增值税已含）。高级版不进入自助支付流程，走销售漏斗。</p>
+      </div>
+    </section>
+
+    <section id="biz-units">
+      <div class="sub-h">1.2 灵基点数规则</div>
+      <div class="card">
+        <ul>
+          <li><b>赠送：</b>每席每月 500 点 → <b>仅生产环境</b>、按月派发、当月有效、过期作废、不结转</li>
+          <li><b>增购：</b>阶梯定价 ¥0.20/点（1–50 万点）/ ¥0.19/点（51–100 万点）/ ¥0.18/点（101 万点以上），最小 1 万点 → <b>生产 + 沙箱均可用</b>、可分配到人（个人额度上限内共享）、即时发放、随主合同租期有效、过期作废</li>
+          <li><b>记账：</b>点数用<b>流水账本</b>（POINT_LEDGER），赠送/增购分别按 expires_at 失效；余额由账本汇总</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="biz-journey">
+      <div class="sub-h">1.3 购买旅程</div>
+      <p style="font-size:13px;color:#475569;margin:0 0 6px"><b>A. 专业版自助新购（PLG，无销售）：</b></p>
+      <div class="flow">
+        选产品/配置 → 企业认证检测 → 勾选服务协议（同意存证）→〔点提交订单：建待支付订单〕→ 金蝶云平台收银台<br>
+        → 支付成功（notify 回调）→ 履约对账 → <b>TID/SN 前置闸</b>（TID 已有；SN 同步从 KBC 获取/生成）→ 开通中（建生产+沙箱租户/权益/点数）→ 开通成功<br>
+        → 异步旁路：KBC 开票 + 电子签出订购确认函 + 推送邮件
+      </div>
+      <p style="font-size:13px;color:#475569;margin:14px 0 6px"><b>B. 增购席位（在用正式客户，产品内）：</b></p>
+      <div class="flow">
+        产品内「增购席位」入口 → 填写席位数 → 勾选协议（再次存证）→ 建增购订单（order_type=expansion）<br>
+        → 金蝶云平台收银台 → 支付成功（notify 回调）→ TID/SN 对齐（SN 不变，挂已有租户）<br>
+        → KDM 追加席位 + 追加赠送点数配额 → 开通成功 → 异步：KBC 开票 + 电子签出确认函 + 推送邮件
+      </div>
+      <p style="font-size:13px;color:#475569;margin:14px 0 6px"><b>C. 增购点数（在用正式客户，产品内）：</b></p>
+      <div class="flow">
+        产品内「增购点数」入口 → 选购点数档位（阶梯定价）→ 勾选协议 → 建增购订单（order_type=add_on）<br>
+        → 金蝶云平台收银台 → 支付成功（notify 回调）→ 验签/幂等/金额匹配<br>
+        → KDM POINT_LEDGER 注入购买点数（生产+沙箱均可用，随主合同租期有效）<br>
+        → 异步：KBC 开票 + 电子签出确认函 + 推送邮件
+      </div>
+      <p style="font-size:13px;color:#475569;margin:14px 0 6px"><b>D. 续费（订阅到期前）：</b></p>
+      <div class="flow">
+        续费提醒（到期前 30/15/7 天邮件通知）→ 客户点「续费」→ 确认席位数（可同时加席位）<br>
+        → 勾选协议 → 建续费订单（order_type=renewal）→ 金蝶云平台收银台<br>
+        → 支付成功（notify 回调）→ TID/SN 对齐（SN 不变）→ KDM 延长租期 + 重置赠送点数周期<br>
+        → 异步：KBC 注册续费 SN + KBC 开票 + 电子签出确认函 + 推送邮件
+      </div>
+      <p style="font-size:13px;color:#475569;margin:14px 0 6px"><b>E. 高级版/大客户面议（销售漏斗）：</b></p>
+      <div class="flow">
+        线索录入 → 销售跟进 → 商机报价 → 赢单付款 → 转成 ORDER → 开通 → SUBSCRIPTION/TENANT
+      </div>
+      <p style="font-size:13px;color:#475569;margin:14px 0 6px"><b>F. 邀请码试用 → 新购（PLG，落地页留资）：</b></p>
+      <div class="flow">
+        落地页填表（姓名/手机号/公司名/邀请码）→ 以手机号查金蝶云平台<br>
+        · 老客户（已有企业TID）→ 自动关联TID<br>
+        · 新客户（无企业TID）→ 代注册云账号+企业（⚠️接口可行性待确认） → 获得企业TID（未认证状态）<br>
+        → LBC 校验邀请码：匹配 → 调天梯→KDM 建 type=trial 试用租户（带TID）→ auto_activated<br>
+        → 码不匹配/KDM 失败 → failed，运营人工审核 → manual_activated<br>
+        → 客户在产品内点「升级购买」→ 进入购买页（流程同A，Section 3 解耦流程）<br>
+        → 新购开通成功 → <b>试用租户 type 改为 sandbox（正式沙箱，数据保留）+ 单独新建生产租户</b>
+      </div>
+      <ul style="margin-top:12px">
+        <li><b>建单时机：</b>勾选协议并点「提交订单」即创建订单（pending_payment）并落同意存证，再创建金蝶云平台收银台</li>
+        <li><b>支付：</b>企业支付宝（扫码，异步 notify 回调）或对公银行转账（notify 回调，T+0 至 T+3 天）</li>
+        <li><b>开通：</b>由金蝶云平台支付 notify 回调<b>异步驱动</b>，先过 TID/SN 对齐闸再调天梯→KDM 开通</li>
+        <li><b>协议：</b>增购/点数购买/续费均须再次勾选存证；增购/续费适用原订阅协议，无需重签</li>
+      </ul>
+      <div class="note blue" style="margin-top:10px">
+        <b>增购入口汇总（产品内）：</b><br>
+        ① 席位增购：管理员在「席位管理」页或套餐页点「增购席位」→ 建 order_type=expansion 订单<br>
+        ② 点数增购：管理员或用户在「点数余额」页点「购买点数」→ 建 order_type=add_on 订单<br>
+        ③ 续费：到期提醒弹窗 / 邮件中的「立即续费」链接 → 建 order_type=renewal 订单<br>
+        三种增购场景的 <b>SN 均不变</b>，挂已有租户，不重新开通；TID/SN 对齐闸做防重开检查。
+      </div>
+      <div class="note" style="margin-top:8px"><b>线索来源（国内扩展）：</b>官网询价 / 产品内询价 / 试用申请 / 销售手工录入 / 线下活动 / 老客户（存量/转介绍）。与海外版相比，多了「线下活动」和「老客户」两个来源，系统均以 source 字段区分。</div>
+    </section>
+
+    <section id="biz-states">
+      <div class="sub-h">1.4 订单状态 & 状态页规范</div>
+      <div class="card">
+        <p><b>订单状态（ORDER.status，10 值，核心 9 态与海外版完全一致，国内新增 pending_activation）：</b></p>
+        <table>
+          <tr><th>状态</th><th>含义</th><th>下一步引导</th></tr>
+          <tr><td><code>pending_payment</code></td><td>待支付（14 天有效）</td><td>继续支付 / 稍后 / 取消</td></tr>
+          <tr><td><code>under_review</code></td><td>已付款，履约对账+风控检查中</td><td>等待，通知激活</td></tr>
+          <tr><td><code>pending_activation</code></td><td>【国内特有】已付款+对账通过，但 TID 缺失（企业认证未完成），等待认证后自动开通</td><td>完成企业认证（含认证跳转链接）/ 申请退款</td></tr>
+          <tr><td><code>provisioning</code></td><td>履约中（建租户/加席位/续期）</td><td>等待（自动跳完成）</td></tr>
+          <tr><td><code>completed</code></td><td>已完成</td><td>前往灵基</td></tr>
+          <tr><td><code>rejected</code></td><td>风控拒绝（黑名单命中）</td><td>联系客服，全额退款</td></tr>
+          <tr><td><code>activation_failed</code></td><td>已付款但开通失败</td><td>联系客服，补开或退款</td></tr>
+          <tr><td><code>cancelled</code></td><td>客户主动取消</td><td>重新下单</td></tr>
+          <tr><td><code>closed</code></td><td>超时未付自动关闭</td><td>重新下单</td></tr>
+          <tr><td><code>refunded</code></td><td>已退款（+ 环境回收）</td><td>—</td></tr>
+        </table>
+        <p class="note" style="margin-top:10px"><b>国内特有：</b>① 对公银行转账在 <code>under_review</code> 状态文案改为「正在核对银行流水，通常 1–3 个工作日」；② <code>pending_activation</code> 为国内版新增状态——已付款但企业认证未完成时进入，认证完成后自动触发 → <code>provisioning</code>，期间客户可申请退款（已付款未交付，我方责任）。</p>
+      </div>
+    </section>
+
+    <section id="biz-contract">
+      <div class="sub-h">1.5 合同与协议</div>
+      <div class="card">
+        <p><b>专业版自助购买：格式合同（单签），无金额上限限制。</b></p>
+        <ul>
+          <li>客户在购买页勾选《灵基服务订阅协议》即构成有效合同（依据《民法典》合同编 + 《电子商务法》），无需双方签名</li>
+          <li>每次新购、增购均须再次勾选存证，证明客户知悉并同意当前版本协议</li>
+          <li>增购适用原订阅协议，无需重新签合同</li>
+        </ul>
+        <p style="margin-top:10px"><b>订购确认函（电子签章，甲方单签）：</b></p>
+        <ul>
+          <li>开通成功后，LBC 自动生成<b>订购确认函 PDF</b>，调<b>金蝶云平台或 KBC 提供的电子签接口</b>（已集成法大大 / 上上签，具体平台待运营确认）为金蝶加盖电子公章，生成带章文件</li>
+          <li>带章 PDF 由 LBC 存储，并通过邮件推送给客户；同一封邮件附增值税电子发票链接 + 所同意协议版本链接</li>
+          <li>订购确认函包含：合同编号 / 甲方主体（金蝶软件（中国）有限公司）/ 乙方主体（客户企业名称 + 统一社会信用代码）/ 产品版本 / 席位数 / 订阅周期 / 含税金额 / 协议版本号 + 链接 / 开通时间 / 金蝶电子公章</li>
+          <li>客户无需回签；此函作为客户财务报销 / 采购系统的合同附件</li>
+          <li>退款时函件不作废（合同已履行），但退款确认邮件中注明服务终止信息</li>
+        </ul>
+        <p class="note" style="margin-top:6px"><b>为什么要做单签确认函：</b>企业客户（尤其金蝶 ERP 生态客户）财务规范度较高，采购系统普遍要求"有公章的合同文件"作为付款凭证；纯勾选存证在法律上有效，但在客户内部报销流程上会产生摩擦。单签确认函解决这一问题，且系统自动生成，不增加人工成本。</p>
+        <p style="margin-top:14px"><b>协议版本管理：</b></p>
+        <ul>
+          <li>协议正文由<b>金蝶法务系统</b>统一存储与维护，LBC 只引用外部链接</li>
+          <li>LBC 维护协议版本记录（版本号 / 外部链接 / 是否当前有效 / 生效日期）</li>
+          <li>状态流转：<code>draft</code>（草稿，可修改）→ <code>active</code>（生效，字段冻结）→ <code>archived</code>（归档，只读永久保留）</li>
+          <li>有同意存证绑定的版本记录<b>永远不能删除</b>，所有操作写 AUDIT_LOG</li>
+        </ul>
+        <p style="margin-top:10px"><b>同意存证记录字段：</b></p>
+        <ul>
+          <li>account_id / contact_email（谁）</li>
+          <li>agreement_version_id（哪个版本）</li>
+          <li>page_enter_time（进入协议页时间）</li>
+          <li>checkbox_checked_time（勾选时间）</li>
+          <li>order_created_time（下单时间）</li>
+          <li>ip_address / user_agent / session_id（操作环境）</li>
+        </ul>
+        <p class="note blue" style="margin-top:10px">时序要求：page_enter_time &lt; checkbox_checked_time &lt; order_created_time &lt; paid_at，完整时序链证明客户有机会阅读并主动同意。电子签盖章在开通后异步触发，不在支付关键路径。</p>
+      </div>
+    </section>
+
+    <section id="biz-compliance">
+      <div class="sub-h">1.6 合规要求（国内版）</div>
+      <div class="card">
+        <table>
+          <tr><th>维度</th><th>要点</th></tr>
+          <tr>
+            <td>企业认证<br/>（购买时机）</td>
+            <td>
+              <b>法律要求：</b>发票需要企业名称 + 统一社会信用代码，合同主体需确定，但法律没有规定认证必须在支付前完成。<br>
+              <b>产品设计决策（支付前完成）：</b>不是法律强制，而是体验选择——付款后才发现未认证会阻断开通，是极差的客户体验；在支付前检测并引导，即使多一步，体验可控。<br>
+              <b>执行：</b>由金蝶云平台（企业身份）提供认证能力，LBC 只读引用（云账号体系：TID · 企业名称 · 统一社会信用代码 · 认证状态）
+            </td>
+          </tr>
+          <tr><td>合同/协议</td><td>格式条款单签，客户勾选即有效；协议正文存法务系统，LBC 引用链接；同意存证 LBC 自管；开通后自动生成带金蝶电子公章的<b>订购确认函 PDF</b>（甲方单签），通过金蝶云平台或 KBC 提供的电子签接口盖章（已集成法大大/上上签，具体待确认），推送客户作为合同凭证</td></tr>
+          <tr><td>发票</td><td>LBC 调 KBC 开票接口 → KBC 开具增值税电子发票 → LBC 存储并推送客户</td></tr>
+          <tr>
+            <td>个人信息保护<br/>（PIPL）</td>
+            <td>
+              <b>法律依据：</b>《个人信息保护法》（2021）要求处理个人信息须遵循<b>最小必要原则</b>（只收集与处理目的直接相关的最少信息），并取得明示同意或具备其他合法依据。<br><br>
+              <b>国内行业实践：</b>B2B SaaS 普遍在注册/购买环节弹出《隐私政策》勾选同意，不强制收集与业务无关字段（如身份证号），企业认证信息依托平台方（本项目依托金蝶云账号体系）。<br><br>
+              <b>LBC 的具体义务：</b>
+              <ul style="margin:6px 0 0 0">
+                <li>购买页仅收集：企业名称 / 统一社会信用代码（来自金蝶云账号认证，不重复收集）/ 联系人姓名 / 手机号 / 邮箱 / 发票抬头信息</li>
+                <li>数据驻留国内，不出境（国内版与海外版分开部署）</li>
+                <li>保留期：订单/发票/同意存证按法律/监管要求保留（通常 5 年）；租户数据回收后 30 天保留期到期删除/匿名化</li>
+                <li>展示：购买页须明示《隐私政策》链接，开通邮件注明数据用途</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>反欺诈 &amp;<br/>本地黑名单</td>
+            <td>
+              <b>法律依据：</b>国内无强制反欺诈合规名单筛查义务（不同于海外 OFAC/制裁名单），但《电子商务法》要求平台对欺诈交易有防控措施。<br><br>
+              <b>国内行业实践：</b>B2B SaaS 通常维护<b>内部黑名单</b>（欺诈/拒付/违规封禁账户），无需接入第三方 OFAC/出口管制名单。<br><br>
+              <b>LBC 的具体设计：</b>本地黑名单（运营手工维护封禁账户）+ 基础反欺诈（异常金额/频率告警）。无制裁名单、无出口管制要求。
+            </td>
+          </tr>
+          <tr>
+            <td>网络安全 &amp;<br/>ICP</td>
+            <td>
+              <b>法律依据：</b>《网络安全法》（2017，2026 年修订版已生效）要求互联网信息服务须持有 ICP 许可证；关键信息基础设施运营者须将数据存境内。<br><br>
+              <b>LBC 适用情况：</b>ICP 许可由金蝶软件（中国）有限公司持有，灵基国内版作为其服务在证内；数据驻留国内已满足；买方无强制实名要求（企业云账号认证已覆盖）。
+            </td>
+          </tr>
+        </table>
+        <p class="note" style="margin-top:10px">国内版无 OFAC/制裁名单/出口管制义务，这是与海外版的核心合规差异。国内合规重心在 PIPL（个人信息保护）、ICP（网络安全）、增值税发票（财税）三个维度。</p>
+      </div>
+    </section>
+
+    <section id="sys-arch">
+      <div class="sec-h"><span class="n">2</span>系统设计</div>
+      <div class="sub-h">2.1 架构与边界（三层）</div>
+      <div class="card">
+        <ul>
+          <li><span class="tag t-sot">SoT 灵基</span> <b>Lingee BC（商业中心/商务层）：</b>产品/SKU、订单、订阅、协议存证、notify 回调、TID/SN 前置闸、通知、工单、审批、审计、电子签确认函</li>
+          <li><b>灵基 KDM（产品/履约层）：</b>建生产+沙箱租户、权益开关、点数派发与计量、ERP 连接器、集群连接注册表</li>
+          <li><b>金蝶天梯（统一编排层）：</b>所有租户操作的统一编排层（自助+SLG 均走天梯），透传+加工：查集群信息、准备物理资源后再转 KDM</li>
+          <li><span class="tag t-kdpay">金蝶云平台（支付）</span> <b>支付执行层：</b>企业支付宝 + 对公银行转账，统一 notify 回调，CNY 结算</li>
+          <li><span class="tag t-ext">金蝶云平台（企业身份）</span> <b>云账号体系：</b>TID 主数据、企业认证、统一社会信用代码，LBC 只读引用；支持代创建云账号/注册企业（接口可行性待确认）</li>
+          <li><b>KBC（SLG + 财务）：</b>SLG 销售系统、SN 生成与管理、收款记账、收入确认、ERP 核算</li>
+          <li><b>KBC（发票）：</b>增值税电子发票开具（普票/专票）、红字发票（退款红冲）、重开、作废</li>
+        </ul>
+        <p class="note" style="margin-top:10px">支付成功 ≠ 立即开通：notify 回调 → <b>履约对账（流水↔订单匹配）</b> → <b>TID/SN 前置闸</b>（TID 支付前已有或认证后补入；以 TID 查 KBC 同步获取 SN，新购时 KBC 生成新 SN，增购时返回已有 SN；TID/SN 均就位才调天梯→KDM 开通）→ 开通后异步推事件给 KBC（发票 + 财务记账）。<b>履约对账在 LBC、秒级；财务记账在 KBC、开通后异步推事件、不阻断开通。</b></p>
+      </div>
+    </section>
+
+    <section id="sys-data">
+      <div class="sub-h">2.2 数据模型（核心实体与国内差异）</div>
+      <div class="card">
+        <p><b>与海外版完全一致的实体（直接复用）：</b></p>
+        <ul>
+          <li>PRODUCT / SKU · ACCOUNT / CONTACT · LEAD / OPPORTUNITY / FREE_TRIAL_REQUEST</li>
+          <li>ORDER / ORDER_ITEM / ORDER_EVENT · SUBSCRIPTION / TENANT / SEAT / POINT_LEDGER</li>
+          <li>SUPPORT_REQUEST / MESSAGE_LOG / MESSAGE_LINK · APPROVAL / AUDIT_LOG · CONSENT_LOG</li>
+        </ul>
+        <p style="margin-top:12px"><b>国内版差异/替换：</b></p>
+        <table>
+          <tr><th>实体</th><th>海外版</th><th>国内版</th></tr>
+          <tr><td>PAYMENT.channel</td><td><code>stripe</code></td><td><code>kingdee_pay</code>（金蝶云平台统一渠道）</td></tr>
+          <tr><td>PAYMENT.method</td><td>card / fpx / grabpay 等</td><td><code>alipay_enterprise</code> / <code>bank_transfer</code></td></tr>
+          <tr><td>INVOICE</td><td>Stripe Invoicing + MyInvois</td><td>KBC 开票接口返回增值税电子发票</td></tr>
+          <tr><td>EINVOICE_SUBMISSION</td><td>MyInvois 上报记录</td><td>KBC_INVOICE_REQUEST（开票请求与结果）</td></tr>
+          <tr><td>DISPUTE</td><td>Stripe Chargeback</td><td><b>不需要</b>（国内支付无此机制）</td></tr>
+          <tr><td>COMPLIANCE_CHECK.check_type</td><td>sanctions / export_control / risk_score / tax_id</td><td><code>blacklist</code>（本地黑名单）/ <code>risk_score</code>（基础反欺诈）</td></tr>
+          <tr><td>AGREEMENT_VERSION</td><td>版本号 + 外部链接（LBC 不自存正文，指向律师审定版本库）；同意存证 CONSENT_LOG 由 LBC 自管</td><td>同左逻辑，外部链接指向<b>金蝶法务系统</b>（而非独立版本库）；CONSENT_LOG 字段与海外版一致</td></tr>
+          <tr><td>WEBHOOK_EVENT</td><td>stripe_event_id 幂等</td><td>kingdee_pay_notify_id 幂等</td></tr>
+        </table>
+        <p class="note blue" style="margin-top:10px">完整字段定义见 <a href="lingee-cn-datamodel.html" style="color:var(--pri)">数据模型</a>。</p>
+      </div>
+    </section>
+
+    <section id="sys-payment">
+      <div class="sub-h">2.3 支付与对账</div>
+      <div class="card">
+        <ul>
+          <li><b>支付集成：</b>接金蝶云平台支付能力，不直接接支付宝/银行。金蝶云平台封装企业支付宝（扫码）和对公银行转账，对 LBC 暴露统一的创建支付单 API 和 notify 回调格式</li>
+          <li><b>企业支付宝：</b>扫码即支付，支付成功后金蝶云平台推送 notify，通常秒级到达</li>
+          <li><b>对公银行转账：</b>客户手动转账，银行流水回来后金蝶云平台推送 notify，T+0 至 T+3 天</li>
+          <li><b>notify 处理：</b>验签 + 幂等（按 notify_id 去重）+ 失败重试，与海外 Webhook 处理逻辑完全对称</li>
+        </ul>
+        <p style="margin-top:10px"><b>两层对账（与海外版一致）：</b></p>
+        <ul>
+          <li><b>履约对账</b>（开通前，关键路径，秒级）：金蝶云平台支付回调金额 ↔ 订单金额匹配，匹配才触发开通</li>
+          <li><b>财务对账</b>（开通后，异步，不阻断）：LBC 订单 ↔ 金蝶云平台流水 ↔ KBC 账务，后台提供对账视图</li>
+        </ul>
+        <p style="margin-top:10px"><b>退款：</b></p>
+        <ul>
+          <li>企业支付宝：调金蝶云平台退款接口，原路退回，通常 T+1 到账</li>
+          <li>对公银行转账：客户提供退款账户信息 → LBC 调金蝶云平台对公退款接口（⚠️ 待确认云平台是否支持；若不支持则降级为人工线下打款）</li>
+          <li>退款成功后：异步推 KBC 做收入冲减（已入总账需冲减）+ 通知 KBC（发票）开红字发票</li>
+          <li>开通后退款需人工双人审批（同海外版）</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="sys-invoice">
+      <div class="sub-h">2.4 发票</div>
+      <div class="card">
+        <ul>
+          <li><b>开票流程：</b>开通完成后，LBC 调用 KBC 开票接口（传入：购买方企业名称/统一社会信用代码/金额/税率/明细）→ KBC 开具增值税电子发票（普票/专票）→ 返回发票文件/链接 → LBC 存储并通过通知服务推送客户</li>
+          <li><b>LBC 存什么：</b>KBC 返回的发票号 / 发票文件链接 / 开票时间 / 发票类型（普票/专票）/ 状态</li>
+          <li><b>LBC 不存什么：</b>税控证书、开票业务逻辑、发票正文（均在 KBC）</li>
+          <li><b>重开发票：</b>客户在管理后台可申请修改开票信息（企业名称/税号填错），LBC 再次调 KBC 接口重开，旧发票在 KBC 作废</li>
+          <li><b>退款发票：</b>退款成功后 LBC 通知 KBC 作废原发票，KBC 开具红字发票，LBC 更新发票状态</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="sys-provision">
+      <div class="sub-h">2.5 开通与履约</div>
+      <div class="card">
+        <ul>
+          <li>金蝶云平台 notify → 验签/幂等 → <b>履约对账（金额匹配）</b> → <b>TID/SN 前置闸</b>：
+            <ul style="margin-top:4px">
+              <li><b>TID</b>：支付前企业认证步骤已得（来自金蝶云平台企业身份），到此已就绪；若未完成认证，支付对账通过后进入 <code>pending_activation</code>，认证完成后自动补入 TID 继续开通</li>
+              <li><b>SN</b>：以 TID 调 KBC 同步获取——有 SN 则增购挂已有租户；无 SN 则 KBC <b>同步生成新 SN 并返回</b>；KBC 超时进待开通队列</li>
+              <li>TID + SN 均到位后才调天梯→KDM 开通，不能只有 LBC 自生成的临时 SN 开通后再补（已开通租户的敏感身份信息不可事后修改）</li>
+            </ul>
+          </li>
+          <li>KDM：建 1 生产 + 1 沙箱租户（隔离）→ 按版本开权益 → 派发赠送点数 + 注入增购点数 + 启用计量</li>
+          <li>赠送点数：<b>按月定时任务</b>派发 500/席，月底清零不结转</li>
+          <li>开通失败 → activation_failed（已付款，补开或退款）</li>
+          <li>开通成功后通过订单同步将最终状态订单推送 KBC，KBC 据订单状态做收款记账 + 收入确认（不阻断开通）</li>
+          <li><b>退款后环境回收：</b>同海外版（SUBSCRIPTION 取消 → TENANT suspended → 保留期 30 天 → terminated → 点数清零）</li>
+        </ul>
+        <p class="note" style="margin-top:10px"><b>⚠️ 海外版已知卡点（国内版不受影响）：</b>KBC 生成 SN 接口及金蝶云平台企业身份接口的海外版计划年底建设完成。国内版接口现在就有，可直接按 Phase 1 目标态实现（TID 支付前从企业认证得到，SN 开通前同步从 KBC 获取）。海外版在接口就绪前为 Phase 0 过渡状态，就绪后需做存量 SN 迁移对齐。</p>
+      </div>
+    </section>
+
+    <section id="prep-payment">
+      <div class="sec-h"><span class="n">3</span>准备工作</div>
+      <div class="sub-h">3.1 金蝶云平台支付能力配置</div>
+      <div class="card">
+        <table>
+          <tr><th>项</th><th>状态</th></tr>
+          <tr><td>金蝶云平台支付账号开通 + 商户认证</td><td><span class="pill p1">待办</span></td></tr>
+          <tr><td>企业支付宝收款配置</td><td><span class="pill p1">待办</span></td></tr>
+          <tr><td>对公银行转账收款配置</td><td><span class="pill p1">待办</span></td></tr>
+          <tr><td>notify 回调端点 + 验签密钥</td><td><span class="pill p1">待办</span></td></tr>
+          <tr><td>退款接口权限申请</td><td><span class="pill p1">待办</span></td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section id="prep-legal">
+      <div class="sub-h">3.2 法律 / 财税</div>
+      <div class="card">
+        <ul>
+          <li><span class="pill p0">P0</span> 《灵基服务订阅协议》国内版定稿（法务，适用中国法/中国法院）</li>
+          <li><span class="pill p0">P0</span> 《购买须知》国内版定稿</li>
+          <li><span class="pill p0">P0</span> KBC 开票接口确认（是否已有对外 API，字段/格式/权限）</li>
+          <li><span class="pill p1">P1</span> 增值税税率确认（软件服务适用 6% 增值税，是否适用软件产品即征即退？）</li>
+          <li><span class="pill p1">P1</span> 对公银行转账退款流程确认（金蝶云平台是否支持对公退款接口；若不支持的降级方案）</li>
+          <li><span class="pill p2">P2</span> PIPL 合规评估（个人信息收集最小化）</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="prep-dev">
+      <div class="sub-h">3.3 研发交接</div>
+      <div class="card">
+        <ul>
+          <li>建单时机：勾选协议并点「提交订单」→ 建 pending_payment 订单 + 落同意存证（含 page_enter_time/checkbox_checked_time/IP/UA/session_id）→ 创建金蝶云平台收银台</li>
+          <li>notify 回调：验签 + 幂等（notify_id 唯一约束）+ 重试，是开通的唯一触发源，禁止在前端回调里开通</li>
+          <li>TID/SN 前置闸：<b>TID 在支付前企业认证时已就绪</b>；<b>SN 在 notify 回调后、开通前同步从 KBC 获取</b>（新购时 KBC 同步生成新 SN，增购时返回已有 SN）——两者必须在调天梯→KDM 开通前都持有，不允许开通后再补（已开通租户的身份信息不可事后修改）。Phase 0 KBC 接口未就绪时用 LBC 临时 SN，是已知技术债</li>
+          <li>试用升级：新购开通成功后，试用租户 type 改为 sandbox（正式沙箱，数据保留），同时新建独立的正式生产租户</li>
+          <li>协议版本：前端读 LBC 最新 is_current=true 的版本链接，不硬编码</li>
+          <li>发票：开通成功后异步调 KBC 开票接口，不在开通关键路径上</li>
+          <li>所有金额用<b>整数（分）</b>存储，展示时除以 100</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="prep-todo">
+      <div class="sub-h">3.4 待办与待拍板决策</div>
+      <div class="card">
+        <p><b>仍需业务/法务拍板：</b></p>
+        <ul>
+          <li>协议定稿（法务）· KBC 开票接口确认 · 增值税税率口径 · 对公退款流程</li>
+          <li>高级版线下合同流程（后续迭代，本期暂不涉及）</li>
+        </ul>
+        <p style="margin-top:10px"><b>海外版已知卡点（国内版不受影响）：</b></p>
+        <ul>
+          <li><span class="pill p0">P0</span> <b>KBC 生成 SN 接口（海外版）</b>：年底建设，届时海外版可切换 Phase 1 链路；同时需设计存量 SN 迁移方案（LBC 临时 SN → KBC 正式 SN）</li>
+          <li><span class="pill p0">P0</span> <b>金蝶云平台企业身份接口（海外版）</b>：同上，年底建设完成</li>
+        </ul>
+        <p>完整任务、优先级见 <a href="lingee-cn-todolist.html" style="color:var(--pri)">待办清单</a>。</p>
+      </div>
+      <div class="note green" style="margin-top:8px">本走查为总纲；每个主题的细节在对应专项文档中，本页提供主线与导航。</div>
+    </section>
+
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>灵基国内购买 · 数据模型（差异文档，基于 v3）</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--pri:#6C5CE7;--ink:#21242F;--muted:#6B7080;--line:#E7E8F0;--bg:#F4F3FB;--card:#fff;--key:#C026D3;--fk:#0EA5E9}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6}
+.wrap{max-width:1200px;margin:0 auto;padding:32px 24px 80px}
+h1{font-size:26px;font-weight:800;letter-spacing:-.3px}
+.lead{color:var(--muted);font-size:13.5px;margin:8px 0 14px;max-width:900px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 26px;margin-bottom:24px;box-shadow:0 6px 22px rgba(76,60,180,.06)}
+.card h2{font-size:18px;font-weight:800;margin-bottom:4px}
+.card h2 .tag{font-size:11px;font-weight:700;color:var(--pri);background:#F0EEFC;border-radius:6px;padding:2px 9px;margin-left:8px}
+.card h2 .tag-cn{font-size:11px;font-weight:700;color:#B45309;background:#FEF3C7;border-radius:6px;padding:2px 9px;margin-left:6px}
+.card h2 .tag-del{font-size:11px;font-weight:700;color:#DC2626;background:#FEE2E2;border-radius:6px;padding:2px 9px;margin-left:6px}
+.card .sub{color:var(--muted);font-size:12.5px;margin-bottom:18px}
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid #F0F0F6;vertical-align:top}
+th{background:#FAFAFE;font-weight:700;color:#475569}
+td code{background:#F3F1FE;color:#4338CA;border-radius:4px;padding:1px 6px;font-size:11.5px;font-family:'SF Mono',Menlo,monospace}
+.pk{color:var(--key);font-weight:700;font-size:10.5px;border:1px solid #F0ABFC;border-radius:5px;padding:1px 6px;background:#FDF4FF}
+.fk{color:var(--fk);font-weight:700;font-size:10.5px;border:1px solid #BAE6FD;border-radius:5px;padding:1px 6px;background:#F0F9FF}
+.req{color:#DC2626;font-weight:700}
+.tname{font-size:15px;font-weight:800;margin:24px 0 2px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.tname:first-of-type{margin-top:6px}
+.tname .cn{font-size:12px;font-weight:500;color:var(--muted)}
+.sot{font-size:10px;font-weight:700;border-radius:5px;padding:2px 8px}
+.sot-l{background:#ECFDF3;color:#166534;border:1px solid #86EFAC}
+.sot-k{background:#FFF4E6;color:#9A3412;border:1px solid #FDBA74}
+.tdesc{font-size:12px;color:var(--muted);margin-bottom:8px}
+.note{font-size:12px;color:var(--muted);background:#FAFAFE;border:1px dashed var(--line);border-radius:10px;padding:12px 15px;margin-top:16px}
+.note b{color:var(--ink)}
+.note.green{background:#F0FDF4;border-color:#BBF7D0;color:#166534}
+.note.amber{background:#FFFBEB;border-color:#FDE68A;color:#92400E}
+.note.red{background:#FEF2F2;border-color:#FECACA;color:#991B1B}
+.badge{font-size:10px;font-weight:700;border-radius:5px;padding:1px 7px}
+.b-cmp{background:#FFF4E6;color:#9A5200;border:1px solid #FDBA74}
+.b-money{background:#ECFDF3;color:#14532D;border:1px solid #86EFAC}
+.b-cn{background:#FEF3C7;color:#92400E;border:1px solid #FCD34D}
+.enum{color:#7C3AED;font-weight:600}
+/* 核心三色行 */
+.new-row{background:#F0FDF4}
+.diff-row{background:#FFFBEB}
+.del-row{background:#FEF2F2;text-decoration:line-through;color:#991B1B}
+.del-row td{color:#991B1B}
+.del-row td code{background:#FEE2E2;color:#991B1B}
+/* 差异清单表 */
+.changelog-table td:first-child{font-weight:700;white-space:nowrap}
+.type-add{color:#166534;background:#DCFCE7;border-radius:4px;padding:1px 8px;font-size:11px}
+.type-mod{color:#92400E;background:#FEF3C7;border-radius:4px;padding:1px 8px;font-size:11px}
+.type-del{color:#991B1B;background:#FEE2E2;border-radius:4px;padding:1px 8px;font-size:11px}
+.type-rep{color:#3730A3;background:#EEF2FF;border-radius:4px;padding:1px 8px;font-size:11px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>灵基国内购买 · 数据模型（差异文档，基于 v3）</h1>
+  <p class="lead">本文档<b>只写国内与 v3 通用版的差异</b>，不重复通用实体的完整字段。阅读本文档前请先阅读 <code>lingee-data-model-v3.html</code>（v3 通用版）。<br>
+  <span class="badge" style="background:#DCFCE7;color:#166534;border:1px solid #86EFAC">绿色行</span> 国内新增字段/实体 &nbsp;
+  <span class="badge" style="background:#FFFBEB;color:#92400E;border:1px solid #FCD34D">黄色行</span> 国内修改/替换字段 &nbsp;
+  <span class="badge" style="background:#FEE2E2;color:#991B1B;border:1px solid #FECACA">红色行</span> 国内删除的实体/字段
+  </p>
+
+  <!-- v3 快速访问 -->
+  <div style="display:flex;align-items:center;gap:12px;background:#F0EEFC;border:1.5px solid #C7CBF5;border-radius:12px;padding:14px 18px;margin-bottom:24px">
+    <span style="font-size:20px">🗂️</span>
+    <div style="flex:1">
+      <div style="font-size:13px;font-weight:800;color:#312E81">依赖文档：灵基 · 数据模型 v3（通用版）</div>
+      <div style="font-size:12px;color:#6B7280;margin-top:2px">本差异文档基于 v3 通用版，需配合阅读。v3 包含完整实体字段定义、ER 图及 v2→v3 变更清单。</div>
+    </div>
+    <a href="lingee-data-model-v3.html" target="_blank" style="background:#6C5CE7;color:#fff;border-radius:8px;padding:7px 16px;font-size:12.5px;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0">打开 v3 通用版 →</a>
+  </div>
+
+
+  <!-- SoT 说明 -->
+  <div class="note green" style="margin-top:0;margin-bottom:24px">
+    <b>主数据源（SoT）原则（国内版）：</b><span class="sot sot-l">灵基 LBC</span> 是产品/订单/订阅/席位/点数/权益/合同的<b>权威源</b>；<span class="sot sot-k">金蝶云平台</span> 是支付执行层（支付结果/流水以其 notify 回调为准）；<b>TID/企业认证</b>权威源在金蝶云账号体系，LBC 只读引用；<b>SN/开票/收款记账</b>权威源在 KBC，LBC 异步推事件后由 KBC 处理。两边以 <code>kingdee_tid</code>、<code>kingdee_sn</code>、<code>notify_id</code> 做系统间映射。
+  </div>
+
+  <!-- 差异清单 -->
+  <div class="card">
+    <h2>0 · 国内 vs v3 通用版差异清单 <span class="tag">速查</span></h2>
+    <div class="sub">下表汇总所有差异。绿色=国内新增，黄色=国内修改/替换，红色=国内删除。</div>
+    <table class="changelog-table">
+      <tr><th>变更类型</th><th>域</th><th>实体</th><th>具体差异</th></tr>
+      <tr class="diff-row"><td><span class="type-mod">修改字段</span></td><td>商品域</td><td>SKU</td><td>currency 固定为 CNY；list_price 以分（人民币）存储</td></tr>
+      <tr class="new-row"><td><span class="type-add">新增字段</span></td><td>客户域</td><td>ACCOUNT</td><td>新增 unified_social_credit_code（统一社会信用代码）、kingdee_tid（国内核心映射键）、tid_certification_status</td></tr>
+      <tr class="diff-row"><td><span class="type-mod">修改字段</span></td><td>客户域</td><td>ACCOUNT</td><td>tax_status 改为增值税口径（vat_general/vat_small）；移除 stripe_customer_id</td></tr>
+      <tr class="new-row"><td><span class="type-add">新增字段</span></td><td>销售域</td><td>FREE_TRIAL_REQUEST</td><td>新增 kingdee_cloud_tid、tid_certification_status、tid_linked_at；failure_reason 新增 tid_registration_failed</td></tr>
+      <tr class="diff-row"><td><span class="type-mod">新增枚举</span></td><td>订单域</td><td>ORDER</td><td>status 新增 pending_activation（已付款但企业认证未完成）；新增 authentication_snapshot(json) 字段</td></tr>
+      <tr class="diff-row"><td><span class="type-rep">替换字段</span></td><td>订单域</td><td>PAYMENT</td><td>channel 改为 kingdee_pay；method 改为 alipay_enterprise/bank_transfer；stripe_payment_intent_id 改为 kingdee_notify_id（幂等键）；币种改 CNY；新增 reconciliation_status</td></tr>
+      <tr class="diff-row"><td><span class="type-mod">修改字段</span></td><td>订单域</td><td>REFUND</td><td>新增 refund_method（alipay_reverse/bank_manual）、bank_account_info；reason 新增 pending_activation_refund；移除 stripe_refund_id</td></tr>
+      <tr class="del-row"><td><span class="type-del">删除实体</span></td><td>订单域</td><td>DISPUTE</td><td>国内无 Chargeback 机制，删除此实体</td></tr>
+      <tr class="diff-row"><td><span class="type-mod">修改字段</span></td><td>履约域</td><td>SUBSCRIPTION</td><td>移除 stripe_sub_id；仅保留 kingdee_sn</td></tr>
+      <tr class="new-row"><td><span class="type-add">新增字段</span></td><td>履约域</td><td>TENANT</td><td>新增 isolation_mode（shared_row/dedicated）；type 枚举新增 trial（试用）</td></tr>
+      <tr class="diff-row"><td><span class="type-mod">修改说明</span></td><td>履约域</td><td>POINT_LEDGER</td><td>国内赠送点数 tenant_scope 固定为 production_only（仅生产环境有效）</td></tr>
+      <tr class="diff-row"><td><span class="type-mod">修改字段</span></td><td>财税合规域</td><td>INVOICE</td><td>seller_entity 改为金蝶软件（中国）有限公司；currency 改为 CNY；新增 vat_type / tax_rate；移除 stripe_invoice_id / fx_rate</td></tr>
+      <tr class="new-row"><td><span class="type-add">新增实体</span></td><td>财税合规域</td><td>KBC_INVOICE_REQUEST</td><td>代替 EINVOICE_SUBMISSION，调 KBC 开票接口，支持 initial/reissue/credit_note</td></tr>
+      <tr class="new-row"><td><span class="type-add">新增实体</span></td><td>财税合规域</td><td>SIGNED_CONTRACT</td><td>国内单签合同（甲方盖章），含 CLM 电子签流程，代替 CONTRACT_CONFIRMATION</td></tr>
+      <tr class="diff-row"><td><span class="type-mod">修改字段</span></td><td>财税合规域</td><td>COMPLIANCE_CHECK</td><td>check_type 简化为 blacklist/risk_score；无 sanctions/export_control/tax_id</td></tr>
+      <tr class="diff-row"><td><span class="type-rep">替换实体</span></td><td>集成域</td><td>WEBHOOK_EVENT → NOTIFY_EVENT</td><td>notify_id 唯一约束幂等键（代替 stripe_event_id）；去掉 event_type 字段</td></tr>
+      <tr class="diff-row"><td><span class="type-mod">修改字段</span></td><td>集成域</td><td>NOTIFICATION</td><td>channel 新增 sms（主渠道）/ in_product（站内→KDM）</td></tr>
+      <tr class="new-row"><td><span class="type-add">新增实体</span></td><td>集成域</td><td>THIRD_PARTY_ORDER</td><td>KBC 透传订单镜像，通过 TID 关联客户，续费时防丢 KBC 侧权益</td></tr>
+    </table>
+  </div>
+
+
+  <!-- 商品域差异 -->
+  <div class="card">
+    <h2>1 · 商品域（差异）<span class="tag-cn">仅写变化部分</span></h2>
+    <div class="sub">PRODUCT 与 v3 通用版完全一致。SKU 差异：currency 固定为 CNY，list_price 以分（人民币）存储。GIFT_POINTS_RULE 与通用版完全一致。</div>
+
+    <div class="tname">SKU <span class="cn">· 可售变体（国内版差异字段）</span> <span class="sot sot-l">SoT 灵基</span></div>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>说明（差异部分）</th></tr>
+      <tr class="diff-row"><td>list_price / currency</td><td><code>int / char(3)</code></td><td><span class="badge b-cn">国内修改</span> 目录价（分，<b>人民币</b>）；currency 固定为 <span class="enum">CNY</span>（¥99/席/月 → 存 9900，年付存 118800，含税）</td></tr>
+    </table>
+    <div class="note"><b>GIFT_POINTS_RULE 与 v3 通用版完全一致。</b>赠送规则不区分国内外，运营后台统一配置，改后下周期生效，写 AUDIT_LOG（event_type=gift_rule_updated）。</div>
+  </div>
+
+  <!-- 客户域差异 -->
+  <div class="card">
+    <h2>2 · 客户域（差异）<span class="tag-cn">ACCOUNT 扩展</span></h2>
+    <div class="sub">ACCOUNT 新增 TID 认证状态字段和统一社会信用代码；移除 stripe_customer_id；tax_status 改为增值税口径。</div>
+
+    <div class="tname">ACCOUNT <span class="cn">· 购买主体（国内差异字段）</span> <span class="sot sot-l">SoT 灵基</span></div>
+    <div class="tdesc">以下仅列国内与 v3 通用版有差异的字段。其余字段（legal_name / lifecycle_stage / primary_contact / owner / dedup_status 等）与 v3 完全一致。</div>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>说明（差异部分）</th></tr>
+      <tr><td colspan="3" style="background:#FAFAFE;font-weight:700;color:#475569">① 身份（国内增量）</td></tr>
+      <tr class="new-row"><td>unified_social_credit_code</td><td><code>string(18)</code></td><td><span class="badge b-cn">国内新增</span> 统一社会信用代码（开票必填，来自金蝶云账号企业认证）。唯一约束，同企业只有一条 ACCOUNT</td></tr>
+      <tr class="diff-row"><td>tax_status（v3 原字段）</td><td><code>enum</code></td><td><span class="badge b-cn">国内替换</span> v3 通用值（domestic_sst/export_zero_rated）→ 国内改为 <span class="enum">vat_general</span>（增值税一般纳税人）/ <span class="enum">vat_small</span>（小规模纳税人）</td></tr>
+      <tr><td colspan="3" style="background:#FAFAFE;font-weight:700;color:#475569">③ 映射（国内增量）</td></tr>
+      <tr class="del-row"><td>stripe_customer_id</td><td><code>string</code></td><td>国内版移除（无 Stripe）</td></tr>
+      <tr class="new-row"><td>kingdee_tid</td><td><code>string</code></td><td><span class="badge b-cn">国内核心</span> 金蝶云账号 TID（企业级唯一标识，LBC 只读引用）。开通租户前必须就位。prospect 阶段可空，试用时绑定，新购前必须有。注意：v3 通用版 ACCOUNT 中 kingdee_tid 是可选映射；国内版将其视为核心必要字段</td></tr>
+      <tr class="new-row"><td>tid_certification_status</td><td><code>enum</code></td><td><span class="badge b-cn">国内新增</span> <span class="enum">certified</span>（已完成企业认证）/ <span class="enum">uncertified</span>（有 TID 但认证未完成）/ <span class="enum">none</span>（无 TID，通常为 prospect 早期）</td></tr>
+    </table>
+    <div class="note amber"><b>ACCOUNT.dedup_status：</b>国内版 dedup_status 的 matched 含义是"已对齐 TID"，匹配链为：① 已绑定 TID 直接命中 → ② 统一社会信用代码 → ③ 企业名称模糊 → 人工复核。</div>
+  </div>
+
+  <!-- 销售域差异 -->
+  <div class="card">
+    <h2>3 · 销售域（差异）<span class="tag-cn">FREE_TRIAL_REQUEST 扩展</span></h2>
+    <div class="sub">LEAD / OPPORTUNITY / CONTACT 与 v3 完全一致（LEAD 的 offline_event/existing_customer/pql_signal 已在 v3 通用版中）。FREE_TRIAL_REQUEST 新增 TID 相关字段。</div>
+
+    <div class="tname">FREE_TRIAL_REQUEST <span class="cn">· 试用申请（国内差异字段）</span> <span class="sot sot-l">SoT 灵基</span></div>
+    <div class="tdesc">v3 通用版已有 contact_name / phone / company_name / cloud_account_type。国内版在此基础上新增 TID 绑定字段。</div>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>必填</th><th>说明（差异部分）</th></tr>
+      <tr class="new-row"><td>kingdee_cloud_tid</td><td><code>string</code></td><td></td><td><span class="badge b-cn">国内新增</span> 金蝶云账号 TID。老客户填资时自动绑定；新客户代注册企业后获得（未认证状态）。可空（待注册接口确认）</td></tr>
+      <tr class="new-row"><td>tid_certification_status</td><td><code>enum</code></td><td></td><td><span class="badge b-cn">国内新增</span> TID 对应企业的认证状态：<span class="enum">certified</span>（已认证）/ <span class="enum">uncertified</span>（有 TID 但认证未完成）/ <span class="enum">unknown</span></td></tr>
+      <tr class="new-row"><td>tid_linked_at</td><td><code>timestamp</code></td><td></td><td><span class="badge b-cn">国内新增</span> TID 绑定时间（老客户留资时 / 新客户新购完成企业认证时）</td></tr>
+      <tr class="diff-row"><td>failure_reason（v3 原枚举扩展）</td><td><code>enum</code></td><td></td><td><span class="badge b-cn">国内新增枚举</span> 在 v3 原有枚举基础上新增 <span class="enum">tid_registration_failed</span>（TID 注册/绑定失败，国内特有）</td></tr>
+    </table>
+    <div class="note amber"><b>试用→新购升级行为：</b>新购开通成功后，试用租户 type 改为 <code>sandbox</code>（正式沙箱，数据保留），同时新建独立正式生产租户。<b>不是</b>试用租户直接升级为生产。</div>
+  </div>
+
+
+  <!-- 订单域差异 -->
+  <div class="card">
+    <h2>4 · 订单域（差异）<span class="tag-cn">PAYMENT 替换；ORDER 扩展；DISPUTE 删除</span></h2>
+
+    <div class="tname">ORDER <span class="cn">· 订单（国内差异字段）</span> <span class="sot sot-l">SoT 灵基</span></div>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>说明（差异部分）</th></tr>
+      <tr class="diff-row"><td>status（v3 原枚举扩展）</td><td><code>enum</code></td><td><span class="badge b-cn">国内新增枚举</span> 在 v3 原有 9 态基础上新增 <span class="enum">pending_activation</span>（已付款但企业认证未完成，等待 TID 认证后开通）</td></tr>
+      <tr class="new-row"><td>authentication_snapshot</td><td><code>json</code></td><td><span class="badge b-cn">国内新增</span> 建单时的企业认证状态快照：{tid, certification_status, company_name, unified_social_credit_code}。记录下单时的认证状态，不随后续认证变化而更新</td></tr>
+      <tr class="diff-row"><td>amount_subtotal / amount_total</td><td><code>int</code></td><td><span class="badge b-cn">国内说明</span> <span class="badge b-money">资金（分，CNY）</span> 国内含税定价，amount_total 即客户实付，无海外版的 settlement_amount_myr / fx_rate</td></tr>
+    </table>
+
+    <div class="tname">PAYMENT <span class="cn">· 支付流水（国内完整替换）</span> <span class="sot sot-k">SoT 金蝶云平台（镜像）</span> <span class="badge b-cn">国内重大修改</span></div>
+    <div class="tdesc">金蝶云平台 notify 回调在 LBC 的镜像。一个订单可有多条（失败重试）。payment_failed 记在这，订单 status 仍 pending_payment。流水只增不改。</div>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr>
+      <tr><td><span class="pk">PK</span> id / <span class="fk">FK</span> order_id / account_id</td><td><code>uuid</code></td><td class="req">*</td><td>所属订单 / 购买方（与 v3 一致）</td></tr>
+      <tr class="diff-row"><td>stripe_payment_intent_id</td><td><code>string</code></td><td></td><td><span class="badge b-cn">国内删除</span> 此字段；改用 kingdee_notify_id</td></tr>
+      <tr class="new-row"><td>kingdee_notify_id</td><td><code>string</code></td><td class="req">*</td><td><span class="badge b-cn">国内替换</span> 金蝶云平台 notify 唯一 ID（<b>唯一约束，幂等去重主键</b>，对应海外版 stripe_payment_intent_id）</td></tr>
+      <tr><td>attempt_no</td><td><code>int</code></td><td class="req">*</td><td>第几次支付尝试（与 v3 一致）</td></tr>
+      <tr class="diff-row"><td>channel</td><td><code>enum</code></td><td class="req">*</td><td><span class="badge b-cn">国内修改</span> 固定为 <span class="enum">kingdee_pay</span>（金蝶云平台统一渠道，代替 stripe）</td></tr>
+      <tr class="diff-row"><td>method</td><td><code>enum</code></td><td></td><td><span class="badge b-cn">国内修改</span> <span class="enum">alipay_enterprise</span>（企业支付宝）/ <span class="enum">bank_transfer</span>（对公银行转账）</td></tr>
+      <tr class="diff-row"><td>card_brand / card_last4</td><td><code>string</code></td><td></td><td><span class="badge b-cn">国内删除</span> 无卡信息字段</td></tr>
+      <tr class="diff-row"><td>amount_total / currency</td><td><code>int / char(3)</code></td><td class="req">*</td><td><span class="badge b-money">资金（分，CNY）</span> 含税实付（分）/ 固定 <span class="enum">CNY</span>。无 settlement_gross/fee/settlement_net/fx_rate 等汇兑字段</td></tr>
+      <tr><td>status</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">processing</span> / <span class="enum">succeeded</span> / <span class="enum">failed</span>（与 v3 一致，无 canceled）</td></tr>
+      <tr><td>failure_reason</td><td><code>string</code></td><td></td><td>失败原因（来自金蝶云平台回调，非 Stripe 错误码）</td></tr>
+      <tr><td>refund_marker</td><td><code>enum</code></td><td></td><td><span class="enum">none</span> / <span class="enum">refunded</span>（国内不分 partially_refunded，对公银行转账通常全额退）</td></tr>
+      <tr><td>created_at / paid_at</td><td><code>timestamp</code></td><td class="req">*</td><td>发起时间 / 成功时间（UTC）</td></tr>
+      <tr class="new-row"><td>reconciliation_status</td><td><code>enum</code></td><td></td><td><span class="badge b-cn">国内新增</span> <span class="enum">matched</span> / <span class="enum">variance</span> / <span class="enum">unmatched</span>（LBC 订单 ↔ 金蝶云平台流水 ↔ KBC 账务 三方对账状态）</td></tr>
+    </table>
+
+    <div class="tname">REFUND <span class="cn">· 退款（国内差异字段）</span> <span class="sot sot-l">SoT 灵基</span></div>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>必填</th><th>说明（差异部分）</th></tr>
+      <tr class="diff-row"><td>stripe_refund_id</td><td><code>string</code></td><td></td><td><span class="badge b-cn">国内删除</span> 移除 Stripe Refund 映射字段</td></tr>
+      <tr class="diff-row"><td>amount / currency</td><td><code>int / char(3)</code></td><td class="req">*</td><td><span class="badge b-money">资金（分，CNY）</span> 退款金额（分）/ 固定 <span class="enum">CNY</span></td></tr>
+      <tr class="diff-row"><td>reason（v3 原枚举扩展）</td><td><code>enum</code></td><td></td><td><span class="badge b-cn">国内新增枚举</span> 在 v3 原有基础上新增 <span class="enum">pending_activation_refund</span>（认证卡开通期间客户申请退款）</td></tr>
+      <tr class="new-row"><td>refund_method</td><td><code>enum</code></td><td class="req">*</td><td><span class="badge b-cn">国内新增</span> <span class="enum">alipay_reverse</span>（企业支付宝原路退，系统自动调金蝶云平台接口）/ <span class="enum">bank_manual</span>（对公银行转账，调金蝶云平台对公退款接口；⚠️ 待确认是否支持，若不支持则降级为人工线下打款）</td></tr>
+      <tr class="new-row"><td>bank_account_info</td><td><code>json</code></td><td></td><td><span class="badge b-cn">国内新增</span> 对公银行退款账户信息（bank_manual 时客户填写）：{account_name, bank_name, account_no}</td></tr>
+    </table>
+
+    <div class="tname">DISPUTE <span class="cn">· 拒付（国内删除）</span></div>
+    <div class="note red"><b>国内版删除 DISPUTE 实体：</b>企业支付宝和对公银行转账均无 Chargeback（拒付）机制，此实体在国内版完全删除。对公银行转账退款走金蝶云平台对公退款接口（待确认是否支持；若不支持降级为人工线下打款），退款账户信息收集在 REFUND.bank_account_info 字段。</div>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>说明</th></tr>
+      <tr class="del-row"><td>（全部字段）</td><td><code>—</code></td><td>国内版无此实体，海外版请参见 v3 通用版文档</td></tr>
+    </table>
+
+    <div class="tname">ORDER_EVENT <span class="cn">· 订单状态历史（国内差异说明）</span></div>
+    <div class="tdesc">结构与 v3 完全一致。from_status / to_status 含义扩展：国内版新增 pending_activation 状态，ORDER_EVENT 记录进入和离开该状态的流转。</div>
+  </div>
+
+
+  <!-- 履约域差异 -->
+  <div class="card">
+    <h2>5 · 订阅履约域（差异）<span class="tag-cn">SUBSCRIPTION / TENANT / POINT_LEDGER 修改；新增 THIRD_PARTY_ORDER</span></h2>
+
+    <div class="tname">SUBSCRIPTION <span class="cn">· 订阅（国内差异字段）</span> <span class="sot sot-l">SoT 灵基</span></div>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>说明（差异部分）</th></tr>
+      <tr class="del-row"><td>stripe_sub_id</td><td><code>string</code></td><td>国内版移除（无 Stripe 订阅；国内版仅保留 kingdee_sn）</td></tr>
+      <tr class="new-row"><td>kingdee_sn</td><td><code>string</code></td><td><span class="badge b-cn">国内核心（v3 可选→国内必须）</span> 金蝶 KBC 合同/订阅序列号（SN）。开通前从 KBC 同步获取：新购时 KBC 同步生成新 SN，增购/续费时返回已有 SN。<b>SN 就位才能调天梯→KDM 开通，不允许事后补绑</b></td></tr>
+    </table>
+
+    <div class="tname">TENANT <span class="cn">· 租户（国内差异字段）</span> <span class="sot sot-l">SoT 灵基 KDM</span></div>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>必填</th><th>说明（差异部分）</th></tr>
+      <tr class="diff-row"><td>type（v3 原枚举扩展）</td><td><code>enum</code></td><td class="req">*</td><td><span class="badge b-cn">国内新增枚举</span> 在 v3 原有 production/sandbox 基础上新增 <span class="enum">trial</span>（试用租户，NEW_PURCHASE 后升级为 sandbox）</td></tr>
+      <tr class="new-row"><td>isolation_mode</td><td><code>enum</code></td><td class="req">*</td><td><span class="badge b-cn">国内新增</span> <span class="enum">shared_row</span>（公有云行隔离，当前）/ <span class="enum">dedicated</span>（专属云，Phase 3）</td></tr>
+      <tr class="diff-row"><td>region</td><td><code>string</code></td><td class="req">*</td><td><span class="badge b-cn">国内说明</span> <span class="badge b-cmp">合规</span> 国内部署区域（cn-&lt;region&gt;），数据不出境。PIPL 合规要求</td></tr>
+    </table>
+
+    <div class="tname">POINT_LEDGER <span class="cn">· 点数流水（国内补充说明）</span> <span class="sot sot-l">SoT 灵基 KDM</span></div>
+    <div class="tdesc">字段结构与 v3 通用版完全一致（含 campaign_id / feature_id 等 v3 新增字段）。国内版有以下业务规则差异：</div>
+    <table>
+      <tr><th>字段</th><th>说明（国内业务规则）</th></tr>
+      <tr class="diff-row"><td>tenant_scope = gift_grant 时</td><td><span class="badge b-cn">国内规则</span> 国内版合同赠送点数（entry_type=gift_grant）的 tenant_scope 固定为 <span class="enum">production_only</span>（仅生产环境有效），不支持 both（沙箱也能用）。增购点数（purchase_grant）仍可选 both</td></tr>
+    </table>
+
+    <div class="tname">THIRD_PARTY_ORDER <span class="cn">· 第三方订单（KBC 透传）</span> <span class="sot sot-l">SoT 灵基（镜像）</span> <span class="badge b-cn">国内新增实体</span></div>
+    <div class="tdesc">SLG 链路中天梯开通完成后回调 LBC，LBC 再主动从 KBC 拉取全量订单和许可信息，存为本地镜像。作用：LBC 续费/增购时不丢 KBC 侧权益，知道客户在 KBC 买了什么。</div>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>必填</th><th>说明 / 枚举值</th></tr>
+      <tr class="new-row"><td><span class="pk">PK</span> id</td><td><code>uuid</code></td><td></td><td>主键</td></tr>
+      <tr class="new-row"><td><span class="fk">FK</span> account_id</td><td><code>uuid</code></td><td class="req">*</td><td>所属客户（通过 TID 关联）</td></tr>
+      <tr class="new-row"><td>kbc_order_no</td><td><code>string</code></td><td class="req">*</td><td>KBC 侧订单号</td></tr>
+      <tr class="new-row"><td>kingdee_sn</td><td><code>string</code></td><td class="req">*</td><td>产品序列号（SN）</td></tr>
+      <tr class="new-row"><td>source_system</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">kbc_slg</span>（SLG 销售在 KBC 下的单）</td></tr>
+      <tr class="new-row"><td>product_code / edition_tier</td><td><code>string / enum</code></td><td class="req">*</td><td>产品编码 / 版本（如 LINGEE_PRO / professional）</td></tr>
+      <tr class="new-row"><td>seats / term_end</td><td><code>int / date</code></td><td></td><td>席位数 / 到期日</td></tr>
+      <tr class="new-row"><td>entitlement_snapshot</td><td><code>json</code></td><td></td><td>KBC 透传的权益快照（全量权益，LBC 续费时参考，防丢权益）</td></tr>
+      <tr class="new-row"><td>synced_at</td><td><code>timestamp</code></td><td class="req">*</td><td>最后同步时间（UTC）</td></tr>
+    </table>
+  </div>
+
+
+  <!-- 财税合规域差异 -->
+  <div class="card">
+    <h2>6 · 财税合规域（差异）<span class="tag-cn">重大修改：INVOICE / COMPLIANCE_CHECK；新增 KBC_INVOICE_REQUEST / SIGNED_CONTRACT</span></h2>
+    <div class="sub">EINVOICE_SUBMISSION 由 KBC_INVOICE_REQUEST 替代。INVOICE 改为国内增值税口径。新增 SIGNED_CONTRACT（单签合同）。COMPLIANCE_CHECK 简化为本地黑名单+反欺诈。CONSENT_LOG / AGREEMENT_VERSION 与 v3 通用版完全一致。</div>
+
+    <div class="tname">INVOICE <span class="cn">· 发票记录（国内差异字段）</span> <span class="sot sot-l">SoT 灵基（存引用，正文在 KBC）</span></div>
+    <div class="tdesc">LBC 不存发票正文，只存 KBC 返回的发票号/链接/状态。开票条件：企业认证完成（有统一社会信用代码）+ 开通成功（服务已交付）。</div>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>说明（差异部分）</th></tr>
+      <tr class="diff-row"><td>seller_entity</td><td><code>string</code></td><td><span class="badge b-cmp">合规</span> 固定为 <b>金蝶软件（中国）有限公司</b>（代替海外版的马来主体）</td></tr>
+      <tr class="diff-row"><td>tax_type（v3 原字段替换）</td><td><code>enum</code></td><td><span class="badge b-cn">国内替换</span> v3 原 sst_8/zero_rated → 国内改为增值税口径（详见 vat_type 字段）</td></tr>
+      <tr class="new-row"><td>vat_type</td><td><code>enum</code></td><td><span class="badge b-cn">国内新增</span> <span class="enum">general</span>（增值税普通发票）/ <span class="enum">special</span>（增值税专用发票）。客户在管理后台选择，也可事后申请修改</td></tr>
+      <tr class="new-row"><td>tax_rate</td><td><code>decimal</code></td><td><span class="badge b-cn">国内新增</span> 增值税税率（软件服务 6%；⚠️待确认是否适用即征即退）</td></tr>
+      <tr class="diff-row"><td>tax_amount / amount_total</td><td><code>int</code></td><td><span class="badge b-money">资金（分，CNY）</span> 税额 / 含税总额（分，人民币）</td></tr>
+      <tr class="del-row"><td>currency（MYR+USD）/ fx_rate</td><td><code>—</code></td><td>国内版删除多币种/汇率字段，currency 固定 CNY</td></tr>
+      <tr class="del-row"><td>stripe_invoice_id / pdf_url（直接 Stripe）</td><td><code>—</code></td><td>国内版移除 Stripe 发票字段；PDF 链接由 KBC_INVOICE_REQUEST.kbc_invoice_pdf_url 提供</td></tr>
+    </table>
+
+    <div class="tname">KBC_INVOICE_REQUEST <span class="cn">· KBC 开票请求与结果</span> <span class="sot sot-l">SoT KBC（镜像）</span> <span class="badge b-cn">国内替代 EINVOICE_SUBMISSION</span></div>
+    <div class="tdesc">LBC 调 KBC 开票接口的请求记录和 KBC 返回结果。开票在开通成功后异步触发，不阻断开通。</div>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>必填</th><th>说明 / 枚举值</th></tr>
+      <tr class="new-row"><td><span class="pk">PK</span> id / <span class="fk">FK</span> invoice_id</td><td><code>uuid</code></td><td class="req">*</td><td>对应 INVOICE 记录</td></tr>
+      <tr class="new-row"><td>request_type</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">initial</span>（首次开票）/ <span class="enum">reissue</span>（重开，信息修改）/ <span class="enum">credit_note</span>（红字发票，退款）</td></tr>
+      <tr class="new-row"><td>buyer_name / buyer_tax_no</td><td><code>string</code></td><td class="req">*</td><td>购买方名称 / 统一社会信用代码（开票必填）</td></tr>
+      <tr class="new-row"><td>amount / tax_rate / tax_amount</td><td><code>int / decimal / int</code></td><td class="req">*</td><td><span class="badge b-money">资金（分，CNY）</span> 不含税金额 / 税率 / 税额（分，人民币）</td></tr>
+      <tr class="new-row"><td>items</td><td><code>json</code></td><td class="req">*</td><td>商品明细：[{product_name, quantity, unit_price, amount}]</td></tr>
+      <tr class="new-row"><td>kbc_invoice_no</td><td><code>string</code></td><td></td><td>KBC 返回的发票号</td></tr>
+      <tr class="new-row"><td>kbc_invoice_pdf_url</td><td><code>string</code></td><td></td><td>KBC 返回的发票 PDF 链接（客户下载用）</td></tr>
+      <tr class="new-row"><td>kbc_invoice_type</td><td><code>enum</code></td><td></td><td>KBC 实际开具的发票类型：<span class="enum">general</span> / <span class="enum">special</span></td></tr>
+      <tr class="new-row"><td>status</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">pending</span> / <span class="enum">submitted</span> / <span class="enum">issued</span>（KBC 已开具）/ <span class="enum">failed</span>（KBC 返回失败）/ <span class="enum">voided</span>（KBC 已作废）</td></tr>
+      <tr class="new-row"><td>failure_reason</td><td><code>string</code></td><td></td><td>失败原因（KBC 返回错误信息）</td></tr>
+      <tr class="new-row"><td>retry_count / requested_at / issued_at</td><td><code>int / timestamp / timestamp</code></td><td></td><td>重试次数 / 请求时间 / 开票完成时间（UTC）</td></tr>
+    </table>
+
+    <div class="tname">SIGNED_CONTRACT <span class="cn">· 单签合同（国内特有）</span> <span class="sot sot-l">SoT 灵基</span> <span class="badge b-cn">国内新增实体</span></div>
+    <div class="tdesc">开通成功后 LBC 自动生成 PDF，调金蝶云平台或 KBC 提供的电子签接口（已集成法大大/上上签）加盖金蝶公章。甲方单签，客户无需回签，作为企业财务报销/采购系统的合同凭证。</div>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>必填</th><th>说明 / 枚举值</th></tr>
+      <tr class="new-row"><td><span class="pk">PK</span> id / <span class="fk">FK</span> order_id</td><td><code>uuid</code></td><td class="req">*</td><td>所属订单</td></tr>
+      <tr class="new-row"><td>contract_no</td><td><code>string</code></td><td class="req">*</td><td>合同编号：LG-CON-YYYYMMDD-xxxx</td></tr>
+      <tr class="new-row"><td>seller_entity</td><td><code>string</code></td><td class="req">*</td><td>甲方：<b>金蝶软件（中国）有限公司</b></td></tr>
+      <tr class="new-row"><td>buyer_entity / buyer_tax_no</td><td><code>string</code></td><td class="req">*</td><td>乙方企业名称 / 统一社会信用代码</td></tr>
+      <tr class="new-row"><td>agreement_version_id</td><td><code>uuid FK</code></td><td class="req">*</td><td>适用的协议版本（指向 AGREEMENT_VERSION，与 v3 通用版关联）</td></tr>
+      <tr class="new-row"><td>product_summary</td><td><code>json</code></td><td class="req">*</td><td>产品摘要：{version, seats, period, amount_total（分，CNY）, currency}</td></tr>
+      <tr class="new-row"><td>activated_at</td><td><code>timestamp</code></td><td class="req">*</td><td>开通时间（UTC）</td></tr>
+      <tr class="new-row"><td>pdf_url</td><td><code>string</code></td><td></td><td>生成的 PDF 链接（未盖章）</td></tr>
+      <tr class="new-row"><td>signed_pdf_url</td><td><code>string</code></td><td></td><td>带金蝶电子公章的 PDF 链接（客户下载用）</td></tr>
+      <tr class="new-row"><td>sign_status</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">generating</span>（生成中）/ <span class="enum">signing</span>（电子签处理中）/ <span class="enum">signed</span>（已盖章）/ <span class="enum">failed</span>（盖章失败，可重试）</td></tr>
+      <tr class="new-row"><td>sign_provider</td><td><code>string</code></td><td></td><td>电子签接口提供方（金蝶云平台或 KBC，集成法大大/上上签）</td></tr>
+      <tr class="new-row"><td>created_at / signed_at</td><td><code>timestamp</code></td><td class="req">*</td><td>生成时间 / 盖章完成时间（UTC）</td></tr>
+    </table>
+
+    <div class="tname">COMPLIANCE_CHECK <span class="cn">· 合规/风控明细（国内简化）</span> <span class="sot sot-l">SoT 灵基</span></div>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>说明（差异部分）</th></tr>
+      <tr class="diff-row"><td>check_type</td><td><code>enum</code></td><td><span class="badge b-cn">国内简化</span> v3 通用版的 sanctions/export_control/risk_score/tax_id 四种 → 国内简化为：<span class="enum">blacklist</span>（本地黑名单，代替 sanctions/export_control，由运营手工维护封禁账户）/ <span class="enum">risk_score</span>（基础反欺诈，LBC 本地规则，非 Stripe Radar）。无 OFAC/制裁名单/出口管制检查</td></tr>
+      <tr class="diff-row"><td>provider / provider_ref</td><td><code>string</code></td><td><span class="badge b-cn">国内说明</span> blacklist=LBC 本地维护黑名单；risk_score=LBC 基础反欺诈规则。无第三方合规 API</td></tr>
+    </table>
+    <div class="note"><b>国内合规重心：</b>① 本地黑名单（运营手工维护封禁账户）；② 基础反欺诈（异常金额/频率告警）；③ PIPL 合规（个人信息最小化收集，由流程设计保障）。无 OFAC/制裁名单/出口管制检查。</div>
+  </div>
+
+
+  <!-- 集成域差异 -->
+  <div class="card">
+    <h2>7 · 集成域（差异）<span class="tag-cn">WEBHOOK_EVENT → NOTIFY_EVENT；NOTIFICATION 扩展</span></h2>
+    <div class="sub">WEBHOOK_EVENT 替换为 NOTIFY_EVENT（金蝶云平台 notify 回调）；NOTIFICATION 扩展短信/站内消息渠道；CAMPAIGN / SUPPORT_REQUEST / MESSAGE_LOG / APPROVAL / AUDIT_LOG 与 v3 通用版完全一致。</div>
+
+    <div class="tname">NOTIFY_EVENT <span class="cn">· 金蝶云平台 Notify 回调（幂等）</span> <span class="sot sot-k">SoT 金蝶云平台（镜像）</span> <span class="badge b-cn">国内替代 WEBHOOK_EVENT</span></div>
+    <div class="tdesc">替代 v3 通用版的 WEBHOOK_EVENT。notify_id 是唯一约束幂等键（对应 stripe_event_id）。</div>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr>
+      <tr class="new-row"><td><span class="pk">PK</span> id</td><td><code>uuid</code></td><td></td><td>主键</td></tr>
+      <tr class="new-row"><td>notify_id</td><td><code>string</code></td><td class="req">*</td><td><span class="badge b-cn">国内替换</span> 金蝶云平台 notify 唯一 ID（<b>唯一约束，幂等去重</b>，对应海外版 stripe_event_id）</td></tr>
+      <tr class="new-row"><td>notify_type</td><td><code>string</code></td><td class="req">*</td><td>payment.succeeded / payment.failed / refund.succeeded …（金蝶云平台事件类型定义）</td></tr>
+      <tr class="new-row"><td>status</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">received</span> / <span class="enum">processed</span> / <span class="enum">failed</span> / <span class="enum">retrying</span></td></tr>
+      <tr class="new-row"><td>retry_count / payload</td><td><code>int / json</code></td><td></td><td>重试次数 / 原始回调体（完整 JSON）</td></tr>
+      <tr class="new-row"><td>created_at</td><td><code>timestamp</code></td><td class="req">*</td><td>接收时间（UTC）</td></tr>
+    </table>
+
+    <div class="tname">NOTIFICATION <span class="cn">· 通知记录（国内差异字段）</span> <span class="sot sot-l">SoT 灵基</span></div>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>说明（差异部分）</th></tr>
+      <tr class="diff-row"><td>channel</td><td><code>enum</code></td><td><span class="badge b-cn">国内扩展</span> 在 v3 原有 email 基础上新增：<span class="enum">sms</span>（短信，<b>国内主渠道</b>：开通成功/认证提醒/续费提醒）/ <span class="enum">in_product</span>（站内推送→KDM 产品侧）</td></tr>
+    </table>
+
+    <div class="tname">MESSAGE_LOG <span class="cn">· 收发消息总账（国内差异字段）</span> <span class="sot sot-l">SoT 灵基</span></div>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>说明（差异部分）</th></tr>
+      <tr class="diff-row"><td>channel</td><td><code>enum</code></td><td><span class="badge b-cn">国内扩展</span> 新增 <span class="enum">sms</span> / <span class="enum">in_product</span>（站内信推送到 KDM）</td></tr>
+    </table>
+    <div class="note"><b>CAMPAIGN / SUPPORT_REQUEST / APPROVAL / AUDIT_LOG</b> 与 v3 通用版完全一致，此处不重复。AUDIT_LOG 在国内版补充枚举：sn_registered / sn_sync_failed（KBC 协同相关）。</div>
+  </div>
+
+  <!-- 综合速查对比 -->
+  <div class="card">
+    <h2>8 · 综合速查：国内 vs v3 通用版对比 <span class="tag">速查</span></h2>
+    <table>
+      <tr><th>实体/字段</th><th>v3 通用版</th><th>国内版（差异）</th></tr>
+      <tr><td>SKU.currency</td><td>USD / CNY 均可</td><td class="diff-row">固定 <code>CNY</code>，list_price 以分（人民币）</td></tr>
+      <tr><td>ACCOUNT 新增</td><td>—</td><td class="new-row">unified_social_credit_code / kingdee_tid（必须）/ tid_certification_status</td></tr>
+      <tr><td>ACCOUNT.tax_status</td><td>domestic_sst / export_zero_rated</td><td class="diff-row">vat_general / vat_small（增值税口径）</td></tr>
+      <tr><td>ACCOUNT.stripe_customer_id</td><td>有</td><td class="del-row">国内版删除</td></tr>
+      <tr><td>FREE_TRIAL_REQUEST 新增</td><td>contact_name/phone/company_name/cloud_account_type（v3 通用）</td><td class="new-row">新增 kingdee_cloud_tid / tid_certification_status / tid_linked_at；failure_reason 新增 tid_registration_failed</td></tr>
+      <tr><td>ORDER.status</td><td>9 态（v3）</td><td class="diff-row">10 态（新增 pending_activation：认证卡开通）</td></tr>
+      <tr><td>ORDER 新增字段</td><td>—</td><td class="new-row">authentication_snapshot（下单时企业认证状态快照）</td></tr>
+      <tr><td>PAYMENT.channel</td><td>stripe</td><td class="diff-row">kingdee_pay</td></tr>
+      <tr><td>PAYMENT.method</td><td>card / fpx / grabpay 等</td><td class="diff-row">alipay_enterprise / bank_transfer</td></tr>
+      <tr><td>PAYMENT 幂等键</td><td>stripe_payment_intent_id</td><td class="diff-row">kingdee_notify_id</td></tr>
+      <tr><td>PAYMENT.reconciliation_status</td><td>—</td><td class="new-row">matched / variance / unmatched（三方对账）</td></tr>
+      <tr><td>REFUND 新增</td><td>—</td><td class="new-row">refund_method（alipay_reverse/bank_manual）/ bank_account_info；reason 新增 pending_activation_refund</td></tr>
+      <tr><td>REFUND.stripe_refund_id</td><td>有</td><td class="del-row">国内版删除</td></tr>
+      <tr><td>DISPUTE</td><td>有（Stripe Chargeback）</td><td class="del-row">国内版删除（无 Chargeback 机制）</td></tr>
+      <tr><td>SUBSCRIPTION.stripe_sub_id</td><td>有</td><td class="del-row">国内版移除</td></tr>
+      <tr><td>SUBSCRIPTION.kingdee_sn</td><td>可选</td><td class="diff-row">国内必须（SN 就位才能开通）</td></tr>
+      <tr><td>TENANT.type</td><td>production / sandbox</td><td class="diff-row">新增 trial（试用；升级后改为 sandbox）</td></tr>
+      <tr><td>TENANT 新增</td><td>—</td><td class="new-row">isolation_mode（shared_row/dedicated）</td></tr>
+      <tr><td>INVOICE.seller_entity</td><td>KINGDEE…MALAYSIA SDN. BHD.</td><td class="diff-row">金蝶软件（中国）有限公司</td></tr>
+      <tr><td>INVOICE 税务字段</td><td>tax_type=sst_8/zero_rated；MYR+USD；fx_rate</td><td class="diff-row">vat_type=general/special；tax_rate（6%）；固定 CNY；无 fx_rate</td></tr>
+      <tr><td>INVOICE.stripe_invoice_id</td><td>有</td><td class="del-row">国内版删除</td></tr>
+      <tr><td>EINVOICE_SUBMISSION</td><td>有（MyInvois 上报）</td><td class="diff-row">替换为 KBC_INVOICE_REQUEST（KBC 开票接口）</td></tr>
+      <tr><td>SIGNED_CONTRACT</td><td>—</td><td class="new-row">国内新增（单签合同+电子签盖章）</td></tr>
+      <tr><td>COMPLIANCE_CHECK.check_type</td><td>sanctions/export_control/risk_score/tax_id</td><td class="diff-row">简化为 blacklist/risk_score（无 OFAC/制裁名单/出口管制）</td></tr>
+      <tr><td>WEBHOOK_EVENT</td><td>有（Stripe 事件，stripe_event_id 幂等）</td><td class="diff-row">替换为 NOTIFY_EVENT（金蝶云平台 notify，notify_id 幂等）</td></tr>
+      <tr><td>NOTIFICATION.channel</td><td>email</td><td class="diff-row">新增 sms（主渠道）/ in_product（站内→KDM）</td></tr>
+      <tr><td>THIRD_PARTY_ORDER</td><td>—</td><td class="new-row">国内新增（KBC 透传订单镜像）</td></tr>
+    </table>
+  </div>
+
+</div><!-- .wrap -->
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+</script>
+</body>
+</html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>灵基国内购买 · 外部系统接口需求</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--pri:#6C5CE7;--ink:#21242F;--muted:#6B7080;--line:#E7E8F0;--bg:#F4F3FB;--card:#fff}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6}
+.wrap{max-width:1160px;margin:0 auto;padding:32px 24px 80px}
+h1{font-size:26px;font-weight:800;letter-spacing:-.3px}
+.lead{color:var(--muted);font-size:13.5px;margin:8px 0 22px;max-width:900px}
+.sys-card{border-radius:16px;padding:24px 28px;margin-bottom:24px;box-shadow:0 6px 22px rgba(0,0,0,.05)}
+.sys-card h2{font-size:18px;font-weight:800;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+.sys-card .sub{font-size:12.5px;margin-bottom:20px}
+.s-kdpay{background:#FFF4E6;border:2px solid #E8820C} .s-kdpay h2{color:#7C3A00} .s-kdpay .sub{color:#92400E}
+.s-ext{background:#EFF6FF;border:2px solid #2563EB} .s-ext h2{color:#1E3A8A} .s-ext .sub{color:#1E40AF}
+.s-kbc{background:#F5F3FF;border:2px solid #8B5CF6} .s-kbc h2{color:#4C1D95} .s-kbc .sub{color:#5B21B6}
+.s-kdm{background:#E6F6FE;border:2px solid #0EA5E9} .s-kdm h2{color:#075985} .s-kdm .sub{color:#0369A1}
+.s-ladder{background:#F1F5F9;border:2px solid #64748B} .s-ladder h2{color:#334155} .s-ladder .sub{color:#475569}
+.iface-group{margin-bottom:16px}
+.iface-group-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#94A3B8;margin-bottom:8px;padding-left:2px;display:flex;align-items:center;gap:6px}
+.iface-group-title::after{content:'';flex:1;height:1px;background:#E2E8F0}
+.iface{border-radius:10px;padding:12px 15px;margin-bottom:8px;border:1px solid}
+.iface h4{font-size:13px;font-weight:800;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.iface p{font-size:12px;color:#475569;line-height:1.6}
+.iface ul{list-style:none;margin:6px 0 0;padding:0}
+.iface li{font-size:12px;color:#475569;padding:2px 0 2px 14px;position:relative}
+.iface li::before{content:'·';position:absolute;left:0;color:#94A3B8}
+.tag{font-size:10px;font-weight:700;border-radius:5px;padding:2px 7px;white-space:nowrap}
+.i-kdpay{background:#FFF9F0;border-color:#FCD34D}
+.i-ext{background:#F0F6FF;border-color:#BFDBFE}
+.i-kbc{background:#FAF8FF;border-color:#DDD6FE}
+.i-kdm{background:#F0FAFF;border-color:#BAE6FD}
+.i-ladder{background:#F8FAFC;border-color:#E2E8F0}
+.note{font-size:12px;background:#FAFAFE;border:1px dashed var(--line);border-radius:9px;padding:11px 14px;color:#64748B;margin-top:8px}
+.note b{color:var(--ink)}
+.note.amber{background:#FFFBEB;border-color:#FDE68A;color:#92400E}
+.note.amber b{color:#78350F}
+.summary-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:8px;background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.04)}
+.summary-table th{background:#F8FAFC;font-weight:700;color:#475569;padding:10px 14px;text-align:left;border-bottom:1px solid #F0F0F6}
+.summary-table td{padding:9px 14px;border-bottom:1px solid #F5F5F9;vertical-align:top}
+.summary-table tr:last-child td{border-bottom:none}
+code{background:#F3F1FE;color:#4338CA;border-radius:4px;padding:1px 6px;font-size:11.5px;font-family:'SF Mono',Menlo,monospace}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>灵基国内购买 · 外部系统接口需求</h1>
+<p class="lead">LBC（灵基商业中心）需要与五个外部系统对接。核心架构：<b>LBC 不再直接调 KDM，改为 LBC → 天梯 → KDM</b>。天梯是所有租户操作的统一编排层。KBC 与 LBC 之间需双向订单通信确保客户权益一致。灵基 KDM 产品侧前端集成 LBC 购买/增购页面。</p>
+
+
+<!-- ═══════════ 1. 金蝶云平台（支付）═══════════ -->
+<div class="sys-card s-kdpay">
+  <h2>💰 金蝶云平台（支付）</h2>
+  <p class="sub">LBC 通过金蝶云平台支付能力收款，不直接对接支付宝/银行。金蝶云平台封装企业支付宝 + 对公银行转账，对 LBC 暴露统一接口。</p>
+
+  <div class="iface-group">
+    <div class="iface-group-title">LBC 主动调用</div>
+    <div class="iface i-kdpay">
+      <h4>① 创建支付单</h4>
+      <p>客户提交订单后，LBC 调此接口创建支付单，获取收银台链接。</p>
+      <ul>
+        <li>入参：订单号、金额（分，CNY）、过期时间（14天）、商品描述、回调地址</li>
+        <li>出参：支付单 ID、收银台 URL / 二维码 / 银行账号</li>
+        <li>触发时机：客户点"提交订单"后同步调用</li>
+      </ul>
+    </div>
+    <div class="iface i-kdpay">
+      <h4>② 退款接口（企业支付宝原路退）</h4>
+      <p>退款审批通过后，LBC 后端调此接口发起退款。<b>仅适用于企业支付宝支付</b>；对公银行转账退款优先走金蝶云平台对公退款接口（⚠️ 待确认是否支持），若不支持则降级为人工线下打款。</p>
+      <ul>
+        <li>入参：原支付单 ID、退款金额、退款原因</li>
+        <li>出参：退款单 ID、预计到账时间</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="iface-group">
+    <div class="iface-group-title">被动接收（金蝶云平台主动推）</div>
+    <div class="iface i-kdpay">
+      <h4>③ 支付 Notify 回调</h4>
+      <p>金蝶云平台支付成功/失败后推送到 LBC 回调端点。<b>开通的唯一触发源</b>，LBC 不依赖前端回跳。</p>
+      <ul>
+        <li>包含：notify_id（幂等去重）、订单号、金额、支付方式、支付时间、签名</li>
+        <li>LBC 处理：验签 → 幂等 → 触发 LBC→天梯→KDM 开通链路</li>
+      </ul>
+    </div>
+    <div class="iface i-kdpay">
+      <h4>④ 退款成功 Notify 回调</h4>
+      <p>退款成功后推送。LBC 收到后触发 LBC→天梯→KDM 租户回收流程。</p>
+      <ul>
+        <li>包含：退款单 ID、原支付单 ID、退款金额、退款成功时间</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="iface-group">
+    <div class="iface-group-title">准备工作（运营配置）</div>
+    <div class="iface i-kdpay">
+      <h4>⑤ 接入配置</h4>
+      <ul>
+        <li>金蝶云平台支付账号开通 + 商户认证</li>
+        <li>企业支付宝收款配置 / 对公银行转账收款配置</li>
+        <li>notify 回调端点注册 + 验签密钥获取</li>
+        <li>退款接口权限申请</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ 2. 金蝶云平台（企业身份）═══════════ -->
+<div class="sys-card s-ext">
+  <h2>🔵 金蝶云平台（企业身份）</h2>
+  <p class="sub">金蝶云账号体系。提供 TID（企业唯一标识）、企业认证状态、云账号注册能力。LBC 只读引用，不重复做认证。</p>
+
+  <div class="iface-group">
+    <div class="iface-group-title">LBC 主动调用</div>
+    <div class="iface i-ext">
+      <h4>① 用手机号/邮箱查企业信息（全量含认证状态）</h4>
+      <p>试用留资、官网新购时，LBC 用客户手机号/邮箱查询该用户关联的企业信息。</p>
+      <ul>
+        <li>入参：手机号 或 邮箱</li>
+        <li>出参：TID、企业名称、统一社会信用代码、认证状态（certified / uncertified / none）、关联账号列表</li>
+        <li>用途：试用需要、官网新购需要</li>
+        <li><b>待确认</b>：一个手机号可能对应多个企业，返回列表还是最近活跃的？</li>
+      </ul>
+    </div>
+    <div class="iface i-ext">
+      <h4>② 用 TID 查企业信息（全量含认证状态）</h4>
+      <p>增购、产品内新购时，LBC 用已知 TID 查询企业最新信息和认证状态。</p>
+      <ul>
+        <li>入参：企业 TID</li>
+        <li>出参：TID、企业名称、统一社会信用代码、认证状态、管理员信息</li>
+        <li>用途：增购需要、产品内新购需要</li>
+      </ul>
+    </div>
+    <div class="iface i-ext">
+      <h4>③ 代注册云账号接口</h4>
+      <p>客户无金蝶云账号，LBC 用留资手机号代注册云账号。试用需要、官网新购需要。</p>
+      <ul>
+        <li>入参：手机号、联系人姓名</li>
+        <li>出参：云账号 ID</li>
+        <li><b>待确认</b>：云平台是否开放此接口？若不支持，备选方案为生成注册链接引导客户自己完成</li>
+      </ul>
+    </div>
+    <div class="iface i-ext">
+      <h4>④ 代注册企业接口</h4>
+      <p>客户有云账号但无企业，LBC 代在已有账号下注册企业，返回企业 TID（未认证状态）。试用需要、官网新购需要。</p>
+      <ul>
+        <li>入参：云账号 ID、企业名称、联系人信息</li>
+        <li>出参：企业 TID（未认证状态）</li>
+        <li><b>待确认</b>：注册企业后是否立即返回 TID？TID 是否需要认证完成才有？</li>
+      </ul>
+    </div>
+    <div class="iface i-ext">
+      <h4>⑤ 刷新/查询认证状态</h4>
+      <p>客户已支付但企业认证未完成（pending_activation），LBC 轮询认证状态，完成后自动触发开通。</p>
+      <ul>
+        <li>入参：企业 TID</li>
+        <li>出参：当前认证状态、认证完成时间</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note amber">
+    <b>核心待确认项：</b>① 代注册接口（云账号+企业）是否开放；② 手机号/邮箱查企业的接口格式和多企业处理逻辑。认证完成由 LBC 主动轮询"刷新/查询认证状态"接口（⑤）获知，不依赖云平台回调。
+  </div>
+</div>
+
+<!-- ═══════════ 3. KBC ═══════════ -->
+<div class="sys-card s-kbc">
+  <h2>🟣 KBC（SLG 系统 + 财务 + 发票 + 合同）</h2>
+  <p class="sub">KBC 是 SN 定义方、发票开具方、财务记账执行方、电子签提供方。LBC 开通前同步获取 SN，开通后异步推财务事件/开票/签约。<b>KBC 与 LBC 之间需要双向订单通信，确保客户权益一致、续费不丢。</b></p>
+
+  <div class="iface-group">
+    <div class="iface-group-title">LBC 主动调用 — 开通前（同步，关键路径）</div>
+    <div class="iface i-kbc">
+      <h4>① 查询 SN（以 TID 查该客户是否已有灵基 SN）</h4>
+      <p>开通前同步调用，判断该客户是新购还是增购/续费。<b>关键路径，SN 必须在调天梯前就位。</b></p>
+      <ul>
+        <li>入参：客户 TID、产品编码（LINGEE_PRO / LINGEE_ULTRA）</li>
+        <li>出参：是否存在 SN、SN 值（存在时返回）</li>
+      </ul>
+    </div>
+    <div class="iface i-kbc">
+      <h4>② 生成 SN（新购时同步生成新 SN 并返回）</h4>
+      <p>新购场景，KBC 同步生成新 SN 并返回给 LBC。同一 TID + 同一产品，SN 唯一且不变。</p>
+      <ul>
+        <li>入参：客户 TID、产品编码、客户企业信息</li>
+        <li>出参：新 SN</li>
+        <li>超时处理：超时 → LBC 进待开通队列，客户看到"处理中"</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="iface-group">
+    <div class="iface-group-title">LBC ↔ KBC 双向订单通信（确保权益一致）</div>
+    <div class="iface i-kbc">
+      <h4>③ 查询灵基订单列表（含退款订单）</h4>
+      <p>KBC 需要查到 LBC 侧的灵基订单信息，确保续费时权益一致。</p>
+      <ul>
+        <li><b>待确认</b>：KBC 主动查 LBC？还是 LBC 推给 KBC？方案待和 KBC 团队沟通</li>
+        <li>数据：订单号、产品版本、席位数、点数、服务期、退款状态</li>
+      </ul>
+    </div>
+    <div class="iface i-kbc">
+      <h4>④ 推送灵基订单列表（含退款订单）</h4>
+      <p>LBC 把灵基订单（新购/增购/续费/退款）推给 KBC，解决权益不一致问题。</p>
+      <ul>
+        <li>入参：TID、SN、订单列表（含订单类型/金额/服务期/状态）</li>
+        <li>出参：接收确认</li>
+        <li><b>待确认</b>：推送频率（实时事件推送 vs 定时批量同步）？接口格式？</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="iface-group">
+    <div class="iface-group-title">LBC 主动调用 — 开通后（异步旁路，不阻断开通）</div>
+    <div class="iface i-kbc">
+      <h4>⑤ 开票接口（增值税电子发票，普票/专票）</h4>
+      <p>开通成功后异步调用，KBC 开具增值税电子发票。</p>
+      <ul>
+        <li>入参：购买方企业名称、统一社会信用代码、含税金额（分）、税率、商品明细、发票类型（general / special）</li>
+        <li>出参：发票号、PDF 链接、开票时间</li>
+      </ul>
+    </div>
+    <div class="iface i-kbc">
+      <h4>⑥ 重开发票（客户修改开票信息）</h4>
+      <p>客户申请修改开票信息，LBC 调此接口作废原发票并重开。</p>
+      <ul>
+        <li>入参：原发票号、新开票信息（企业名称/税号等）</li>
+        <li>出参：新发票号、新 PDF 链接</li>
+      </ul>
+    </div>
+    <div class="iface i-kbc">
+      <h4>⑦ 红字发票（退款红冲）</h4>
+      <p>退款成功后，LBC 通知 KBC 开具红字发票。</p>
+      <ul>
+        <li>入参：原发票号、退款金额、退款原因</li>
+        <li>出参：红字发票号</li>
+        <li>触发时机：退款成功回调后异步</li>
+      </ul>
+    </div>
+    <div class="iface i-kbc">
+      <h4>⑧ 单签合同（电子签盖章）</h4>
+      <p>开通成功后，LBC 生成订购确认函 PDF，调 KBC 提供的电子签接口加盖金蝶电子公章。KBC 已集成法大大/上上签。</p>
+      <ul>
+        <li>入参：PDF 文件/URL、盖章位置信息、金蝶公章 ID</li>
+        <li>出参：带章 PDF 下载链接</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note amber">
+    <b>KBC 核心待确认项：</b>① 双向订单通信方案（KBC 查 LBC 还是 LBC 推 KBC）；② 开票/重开/红冲 API 格式；③ 电子签接口文档。
+  </div>
+</div>
+
+<!-- ═══════════ 4. 金蝶天梯（统一编排层）═══════════ -->
+<div class="sys-card s-ladder">
+  <h2>🔧 金蝶天梯（统一编排层）</h2>
+  <p class="sub"><b>天梯是所有租户操作的统一编排层，LBC 通过天梯调度 KDM。</b>天梯接收 LBC 指令后：① 透传 TID+SN+许可给 KDM；② 查集群信息（ERP 集群连接）；③ 准备物理资源（专属云模式）；④ 调 KDM 执行开通/增购/续费/回收。不只是 SLG 链路，自助购买链路也走天梯。</p>
+
+  <div class="note amber" style="margin-bottom:16px">
+    <b>⚠️ 待跨部门澄清：</b>以下 5 个操作是一个统一 API 传不同 <code>action_type</code>，还是 5 个独立 API？入参/出参格式需与天梯团队对齐。
+  </div>
+
+  <div class="iface-group">
+    <div class="iface-group-title">LBC → 天梯 → KDM（统一租户操作）</div>
+    <div class="iface i-ladder">
+      <h4>① 开通付费租户</h4>
+      <p>LBC→天梯→KDM：建生产+沙箱租户，开权益，派发点数。新购支付+TID/SN 就位后触发。</p>
+      <ul>
+        <li>入参：action_type=provision_paid / TID / SN / 产品版本 / 席位数 / 赠送点数配置 / 订阅期</li>
+        <li>出参：执行状态 / 生产租户 URL / 沙箱租户 URL / 失败原因</li>
+        <li>天梯加工：查集群信息、分配资源后调 KDM 执行</li>
+      </ul>
+    </div>
+    <div class="iface i-ladder">
+      <h4>② 开通试用租户</h4>
+      <p>LBC→天梯→KDM：建 trial 租户，带 TID。试用邀请码匹配后触发。</p>
+      <ul>
+        <li>入参：action_type=provision_trial / TID / 产品编码 / 试用期限</li>
+        <li>出参：执行状态 / trial 租户 URL / 试用到期时间 / 失败原因</li>
+      </ul>
+    </div>
+    <div class="iface i-ladder">
+      <h4>③ 增购权益激活</h4>
+      <p>LBC→天梯→KDM：追加席位/注入点数。增购支付+对账通过后触发。</p>
+      <ul>
+        <li>入参：action_type=expansion / TID / SN / 追加席位数（席位增购时）/ 点数金额（点数增购时）/ expires_at</li>
+        <li>出参：执行状态 / 当前总席位数 / 当前点数余额 / 失败原因</li>
+      </ul>
+    </div>
+    <div class="iface i-ladder">
+      <h4>④ 续费权益激活</h4>
+      <p>LBC→天梯→KDM：延长 term_end + 重置赠送点数周期。续费支付后触发。</p>
+      <ul>
+        <li>入参：action_type=renewal / TID / SN / 新 term_end / 席位数（可能同时加席位）</li>
+        <li>出参：执行状态 / 新 term_end 确认 / 失败原因</li>
+      </ul>
+    </div>
+    <div class="iface i-ladder">
+      <h4>⑤ 触发租户回收</h4>
+      <p>LBC→天梯→KDM：租户 suspended→grace_period→terminated，点数清零。退款成功后触发。</p>
+      <ul>
+        <li>入参：action_type=reclaim / TID / SN</li>
+        <li>出参：执行状态 / 回收状态 / grace_until 时间 / 失败原因</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>统一入参结构：</b><code>action_type</code> / <code>TID</code> / <code>SN</code> / 产品版本 / 席位数 / 点数 / term_end 等。<b>统一出参结构：</b>执行状态 / 租户 URL（新开通时）/ 失败原因。天梯负责编排，LBC 只需发指令，不关心底层资源调度细节。
+  </div>
+</div>
+
+<!-- ═══════════ 5. 灵基 KDM（产品侧）═══════════ -->
+<div class="sys-card s-kdm">
+  <h2>🟦 灵基 KDM（产品侧）</h2>
+  <p class="sub">灵基 KDM 产品侧有入口唤起 LBC 的购买/增购页面（前端集成）。购买完成后前端关闭弹窗刷新界面，正式订单/权益推送走后台完整流程（LBC→天梯→KDM）。</p>
+
+  <div class="iface-group">
+    <div class="iface-group-title">前端集成（非后端 API）</div>
+    <div class="iface i-kdm">
+      <h4>① 产品内唤起增购页</h4>
+      <p>灵基 console 内"增购席位"/"购买点数"按钮，打开 LBC 增购页面。前端集成，非后端 API。</p>
+      <ul>
+        <li>方式：弹窗（iframe）或跳转 URL</li>
+        <li>传参：TID、SN、当前产品版本、当前席位数、来源标识</li>
+        <li>场景：已有付费租户的客户在产品内追加席位或购买点数</li>
+      </ul>
+    </div>
+    <div class="iface i-kdm">
+      <h4>② 产品内唤起新购页</h4>
+      <p>灵基 console 内"升级/购买"按钮，打开 LBC 新购页面。前端集成，非后端 API。</p>
+      <ul>
+        <li>方式：弹窗（iframe）或跳转 URL</li>
+        <li>传参：TID、当前试用状态、来源标识</li>
+        <li>场景：试用客户升级为付费、或免费功能引导购买</li>
+      </ul>
+    </div>
+    <div class="iface i-kdm">
+      <h4>③ 增购/新购完成回调（前端交互）</h4>
+      <p>购买完成后 LBC 通知灵基产品侧"关闭弹窗刷新界面"。<b>此处仅前端交互</b>，正式权益推送走后台流程（LBC→天梯→KDM）。</p>
+      <ul>
+        <li>方式：前端 <code>postMessage</code> 或回调 URL 带参数</li>
+        <li>传递信息：购买完成状态、订单类型（新购/增购）</li>
+        <li>KDM 前端行为：关闭弹窗、刷新权益展示界面</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>设计要点：</b>前端集成使购买体验无缝（不离开灵基产品），正式权益变更走后台完整链路（LBC→天梯→KDM）保证数据一致性。前端只负责"关闭弹窗+刷新UI"，不承担权益写入。
+  </div>
+</div>
+
+<!-- ═══════════ 汇总表 ═══════════ -->
+<div style="background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 28px;margin-bottom:24px;box-shadow:0 6px 22px rgba(76,60,180,.06)">
+  <h2 style="font-size:18px;font-weight:800;margin-bottom:4px">接口需求汇总</h2>
+  <p style="color:var(--muted);font-size:12.5px;margin-bottom:16px">共 22 个接口/集成需求，按系统汇总。核心架构：LBC→天梯→KDM（不再直连）；LBC↔KBC 双向订单同步；KDM 前端集成 LBC 购买页。</p>
+  <table class="summary-table">
+    <tr><th>#</th><th>系统</th><th>接口 / 集成项</th><th>调用方向</th><th>说明</th></tr>
+    <tr><td colspan="5" style="background:#FFF9F0;font-weight:700;color:#92400E;padding:8px 14px">金蝶云平台（支付）</td></tr>
+    <tr><td>1</td><td>云平台（支付）</td><td>创建支付单</td><td>LBC → 云平台</td><td>客户提交订单后获取收银台</td></tr>
+    <tr><td>2</td><td>云平台（支付）</td><td>退款接口（支付宝原路退 + 对公退款）</td><td>LBC → 云平台</td><td>对公退款接口待确认是否支持</td></tr>
+    <tr><td>3</td><td>云平台（支付）</td><td>支付成功 Notify 回调</td><td>云平台 → LBC</td><td>开通的唯一触发源</td></tr>
+    <tr><td>4</td><td>云平台（支付）</td><td>退款成功 Notify 回调</td><td>云平台 → LBC</td><td>触发租户回收流程</td></tr>
+    <tr><td colspan="5" style="background:#F0F6FF;font-weight:700;color:#1E40AF;padding:8px 14px">金蝶云平台（企业身份）</td></tr>
+    <tr><td>5</td><td>云平台（企业身份）</td><td>手机号/邮箱查企业信息</td><td>LBC → 云平台</td><td>试用留资时查是否已有云账号</td></tr>
+    <tr><td>6</td><td>云平台（企业身份）</td><td>TID 查企业信息（含认证状态）</td><td>LBC → 云平台</td><td>购买前检测认证状态</td></tr>
+    <tr><td>7</td><td>云平台（企业身份）</td><td>代注册云账号 + 注册企业</td><td>LBC → 云平台</td><td>试用/新购未认证客户</td></tr>
+    <tr><td>8</td><td>云平台（企业身份）</td><td>刷新/查询认证状态</td><td>LBC → 云平台（轮询）</td><td>pending_activation 时轮询认证完成</td></tr>
+    <tr><td colspan="5" style="background:#F5F3FF;font-weight:700;color:#4C1D95;padding:8px 14px">KBC（SLG + 财务 + 发票 + 合同）</td></tr>
+    <tr><td>9</td><td>KBC</td><td>查询 SN（以 TID 查）</td><td>LBC → KBC</td><td>判断新购 vs 增购</td></tr>
+    <tr><td>10</td><td>KBC</td><td>生成 SN（新购时同步生成）</td><td>LBC → KBC</td><td>新购场景，SN 唯一不变</td></tr>
+    <tr><td>11</td><td>KBC</td><td>LBC 拉取 KBC 订单（SLG 侧）</td><td>LBC → KBC</td><td>天梯开通完成后 LBC 主动拉取</td></tr>
+    <tr><td>12</td><td>KBC</td><td>LBC 推送自助订单给 KBC</td><td>LBC → KBC</td><td>双向同步，KBC 续费不丢 LBC 权益</td></tr>
+    <tr><td>13</td><td>KBC（发票）</td><td>开票接口（普票/专票）</td><td>LBC → KBC</td><td>开通成功后异步调用</td></tr>
+    <tr><td>14</td><td>KBC（发票）</td><td>重开发票（信息修改）</td><td>LBC → KBC</td><td>客户申请修改开票信息</td></tr>
+    <tr><td>15</td><td>KBC（发票）</td><td>红字发票（退款红冲）</td><td>LBC → KBC</td><td>退款成功后通知作废原发票</td></tr>
+    <tr><td>16</td><td>KBC（合同）</td><td>电子签（单签合同盖章）</td><td>LBC → KBC</td><td>开通后生成确认函+盖章</td></tr>
+    <tr><td colspan="5" style="background:#E6F6FE;font-weight:700;color:#075985;padding:8px 14px">金蝶天梯（统一编排层）</td></tr>
+    <tr><td>17</td><td>天梯</td><td>开通付费租户</td><td>LBC → 天梯 → KDM</td><td>新购开通</td></tr>
+    <tr><td>18</td><td>天梯</td><td>开通试用租户</td><td>LBC → 天梯 → KDM</td><td>试用申请通过后</td></tr>
+    <tr><td>19</td><td>天梯</td><td>增购/续费权益激活</td><td>LBC → 天梯 → KDM</td><td>席位追加、点数注入、延长租期</td></tr>
+    <tr><td>20</td><td>天梯</td><td>触发租户回收</td><td>LBC → 天梯 → KDM</td><td>退款/过期后停服+回收</td></tr>
+    <tr><td colspan="5" style="background:#F1F5F9;font-weight:700;color:#475569;padding:8px 14px">KDM 前端集成</td></tr>
+    <tr><td>22</td><td>KDM（前端）</td><td>产品内唤起增购/新购页</td><td>KDM 前端 → LBC 页面</td><td>iframe/跳转，传 TID+SN+context</td></tr>
+    <tr><td>23</td><td>KDM（前端）</td><td>购买完成回调</td><td>LBC 前端 → KDM 前端</td><td>购买成功后通知产品侧刷新权益</td></tr>
+  </table>
+</div>
+
+<p style="text-align:center;color:var(--muted);font-size:12px;margin-top:8px">核心架构：LBC 不再直调 KDM，改为 LBC → 天梯 → KDM。天梯是统一编排层。各接口需与对应系统团队对接确认后方可开发。</p>
+
+</div>
+</body>
+</html>

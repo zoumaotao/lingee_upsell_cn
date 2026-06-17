@@ -984,12 +984,12 @@ body{
           <div class="row"><span class="l">状态</span><span class="r amber">● 等待对账</span></div>
         </div>
       </div>
-      <div class="alert-block alert-info">无需您操作，对账完成后将自动激活权益，并通知 <b>zhangming@xinchen.com</b>。</div>
+      <div class="alert-block alert-info">无需您操作，权益激活成功会通知 <b>zhangming@xinchen.com</b> 或 <b>17200000000</b>。复制订单号联系客服</div>
       <div class="btn-row">
         <button class="btn btn-outline" onclick="copyOrderNum()">复制订单号</button>
         <button class="btn btn-outline" onclick="openContact()">联系客服</button>
       </div>
-    </div>
+    </div> 
 
     <!-- 4D 权益激活中 -->
     <div id="state-provisioning" style="display:none" class="state-narrow">
@@ -1009,6 +1009,11 @@ body{
           <div class="row"><span class="l">已支付</span><span class="r" id="provisioning-total">—</span></div>
           <div class="row"><span class="l">状态</span><span class="r hl">● 开通中</span></div>
         </div>
+      </div>
+      <div class="alert-block alert-info">无需您操作，权益激活成功会通知 <b>zhangming@xinchen.com</b>，或 <b>1720000</b>。复制订单号联系客服</div>
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="copyOrderNum()">复制订单号</button>
+        <button class="btn btn-outline" onclick="openContact()">联系客服</button>
       </div>
     </div>
 
@@ -1187,7 +1192,7 @@ body{
     <div class="demo-menu-header">订单状态</div>
     <button class="demo-item" onclick="goPage('pending')"><span>⏱</span> 订单待支付</button>
     <button class="demo-item" onclick="goPage('failed')"><span>❌</span> 支付失败</button>
-    <button class="demo-item" onclick="goPage('review')"><span>🏦</span> 等待对账确认</button>
+    <button class="demo-item" onclick="goPage('review')"><span>🏦</span> 等待对账确认（不需要了）</button> 
     <button class="demo-item" onclick="goPage('provisioning')"><span>⏳</span> 权益激活中</button>
     <button class="demo-item" onclick="goPage('success')"><span>✅</span> 权益激活成功</button>
     <button class="demo-item" onclick="goPage('actfail')"><span>⚠️</span> 权益激活失败</button>
@@ -1467,13 +1472,13 @@ function showState(state) {
   // 内容描述
   let contentStr = '';
   if (seatQty > 0 && pointsQty > 0)
-    contentStr = `专业版 +${seatQty}席（按天补差价）· ${fmtWan(pts)}`;
+    contentStr = `专业版 +${seatQty}席（按天）· ${fmtWan(pts)}`;
   else if (seatQty > 0)
-    contentStr = `专业版 +${seatQty}席（按天补差价）`;
+    contentStr = `专业版 +${seatQty}席（按天）`;
   else if (pointsQty > 0)
     contentStr = `${fmtWan(pts)}点数包`;
   else
-    contentStr = '专业版 +3席（按天补差价）· 10 万点'; // demo default
+    contentStr = '专业版 +3席（按天）· 10 万点'; // demo default
 
   const totalStr = total > 0 ? fmt(total) + '（含税）' : '¥3,564.00（含税）';
   const orderNum = document.getElementById('order-num')?.textContent || 'LG-20260615-000001';
