@@ -72,8 +72,7 @@ td code{background:#F3F1FE;color:#4338CA;border-radius:4px;padding:1px 6px;font-
       <tr><td>CONSENT_LOG 时序</td><td>仅 accepted_at + ip + user_agent</td><td class="new-row">新增 page_enter_time / checkbox_checked_time / order_created_time / session_id（完整时序链，法律证据）</td></tr>
       <tr><td>FREE_TRIAL_REQUEST 留资</td><td>无通用留资字段（依赖 CONTACT）</td><td class="new-row">新增通用字段：contact_name / phone / company_name（代注册用）；cloud_account_type（企业账号判断）</td></tr>
       <tr><td>AUDIT_LOG.event_type</td><td>无协议/营销/赠送规则相关枚举</td><td class="new-row">新增 agreement_version_published / gift_rule_updated / campaign_created / campaign_executed</td></tr>
-      <tr><td>ORDER（KBC 对接）</td><td>无 KBC 单据关联字段</td><td class="new-row">新增 kingdee_sn（订单层直接携带 SN，新购/续费/加购均带）/ kbc_order_no（KBC 回填单据号）</td></tr>
-      <tr><td>PAYMENT（KBC 对接）</td><td>仅有 Stripe 结算字段</td><td class="new-row">新增 functional_currency（本位币）/ controlling_currency（管控币）/ kbc_fx_rate（KBC 当期汇率）/ exchange_gain_loss（汇损）</td></tr>
+      <tr><td>ORDER（KBC 对接）</td><td>无 KBC 单据关联字段</td><td class="new-row">新增 kingdee_sn（订单层直接携带 SN，新购/续费/加购均带）/ kbc_order_no（KBC 回填单据号，与 THIRD_PARTY_ORDER 双向关联）</td></tr>
       <tr><td>INVOICE（KBC 对接）</td><td>tax_type 枚举无数值字段</td><td class="new-row">新增 tax_rate（税率数值，如 0.13，与 KBC 开票参数对齐）</td></tr>
     </table>
   </div>
@@ -457,7 +456,7 @@ erDiagram
       <tr><td>settlement_amount_myr</td><td><code>int</code></td><td></td><td><span class="badge b-money">资金（分）</span> 实际结算 MYR（海外 Stripe payout 回传，对账用）</td></tr>
       <tr><td>stripe_checkout_session_id</td><td><code>string</code></td><td></td><td>Checkout Session（海外版用）</td></tr>
       <tr><td>kingdee_sn</td><td><code>string</code></td><td></td><td>金蝶 SN（产品序列号）在订单层直接携带——新购/续费/加购所有订单均带 SN，便于 KBC 财务侧按单据号+SN 匹配；新购时 KBC 同步生成返回，增购/续费时复用已有 SN</td></tr>
-      <tr><td>kbc_order_no</td><td><code>string</code></td><td></td><td>KBC 侧单据号（KBC 接收 LBC 订单后回填）；用于 LBC↔KBC 对账视图的双向关联</td></tr>
+      <tr><td>kbc_order_no</td><td><code>string</code></td><td></td><td>KBC 回填的单据号（KBC 接收 LBC 订单后回填）；用于 LBC↔KBC 对账视图双向关联</td></tr>
       <tr><td>created_at</td><td><code>timestamp</code></td><td class="req">*</td><td>下单时间。存 UTC，展示 GMT+8</td></tr>
       <tr><td>expires_at</td><td><code>timestamp</code></td><td></td><td>= created_at + 14 天；到期定时任务置 closed</td></tr>
       <tr><td>paid_at / activated_at / cancelled_at / closed_at / refunded_at</td><td><code>timestamp</code></td><td></td><td>各节点时间（UTC）</td></tr>
@@ -486,10 +485,6 @@ erDiagram
       <tr><td>amount_subtotal / tax_amount / amount_total</td><td><code>int</code></td><td></td><td><span class="badge b-money">资金（分）</span> 税前 / 税额 / 含税实付（分）</td></tr>
       <tr><td>currency</td><td><code>char(3)</code></td><td class="req">*</td><td><span class="enum">USD</span>（海外 presentment currency）</td></tr>
       <tr><td>settlement_gross / fee / settlement_net / settlement_currency / fx_rate</td><td><code>int / int / int / char(3) / decimal</code></td><td></td><td><span class="badge b-money">资金（分）</span> 结算 MYR 三口径：毛换汇 − Stripe 手续费 = 净到账 payout</td></tr>
-      <tr><td>functional_currency</td><td><code>char(3)</code></td><td></td><td>本位币（记账币种）：海外版 <span class="enum">MYR</span>，国内版 <span class="enum">CNY</span>（原币=本位币，无换汇）</td></tr>
-      <tr><td>controlling_currency</td><td><code>char(3)</code></td><td></td><td>管控币（KBC ERP 集团统一核算币种）：国内版固定 <span class="enum">CNY</span>；海外版视集团财务规则，通常 <span class="enum">CNY</span> 或 <span class="enum">USD</span>（由 KBC 配置，LBC 传递不计算）</td></tr>
-      <tr><td>kbc_fx_rate</td><td><code>decimal</code></td><td></td><td>KBC 当期汇率（原币→管控币）；可能与 Stripe 结算汇率不同，由 KBC 财务系统按当期汇率表计算后回传 LBC 存镜像；国内版原币=CNY=管控币，固定 1.0</td></tr>
-      <tr><td>exchange_gain_loss</td><td><code>int</code></td><td></td><td><span class="badge b-money">资金（分）</span> 汇损金额（原币金额按 kbc_fx_rate 换算后与实收管控币金额的差额，负值=汇损，正值=汇益）；国内版无跨币种，固定 0</td></tr>
       <tr><td>status</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">processing</span> / <span class="enum">succeeded</span> / <span class="enum">failed</span> / <span class="enum">canceled</span></td></tr>
       <tr><td>failure_code / failure_reason</td><td><code>string</code></td><td></td><td>失败原因，来自 Stripe：<span class="enum">insufficient_funds</span> / <span class="enum">card_declined</span> / <span class="enum">expired_card</span> / <span class="enum">processing_error</span> / <span class="enum">authentication_required</span> 等</td></tr>
       <tr><td>refund_marker</td><td><code>enum</code></td><td></td><td><span class="enum">none</span> / <span class="enum">partially_refunded</span> / <span class="enum">refunded</span>（原流水不可改，退款另建 REFUND 记录）</td></tr>
@@ -756,7 +751,8 @@ erDiagram
       <tr><td><span class="pk">PK</span> id</td><td><code>uuid</code></td><td></td><td>主键</td></tr>
       <tr><td><span class="fk">FK</span> account_id</td><td><code>uuid</code></td><td class="req">*</td><td>关联客户（通过 TID 归并到 ACCOUNT）</td></tr>
       <tr><td>kingdee_sn</td><td><code>string</code></td><td class="req">*</td><td>KBC 产品序列号（SN），主键关联标识</td></tr>
-      <tr><td>kbc_order_no</td><td><code>string</code></td><td class="req">*</td><td>KBC 侧单据号</td></tr>
+      <tr><td>third_party_system</td><td><code>enum</code></td><td class="req">*</td><td>来源系统：<span class="enum">kbc</span>（金蝶商业软件 SLG 链路）/ <span class="enum">other</span>（预留）</td></tr>
+      <tr><td>third_party_order_no</td><td><code>string</code></td><td class="req">*</td><td>外部系统单据号（如 KBC 单据号）；与 ORDER.kbc_order_no 互为镜像关联键</td></tr>
       <tr><td>product_code / edition</td><td><code>string</code></td><td class="req">*</td><td>产品编码 / 版本</td></tr>
       <tr><td>seats / term_start / term_end</td><td><code>int / date / date</code></td><td class="req">*</td><td>席位数 / 服务期起止</td></tr>
       <tr><td>entitlements</td><td><code>json</code></td><td></td><td>KBC 侧权益快照（许可点数/功能模块等）</td></tr>
