@@ -121,6 +121,8 @@ erDiagram
   SUBSCRIPTION ||--o{ SUPPORT_REQUEST : "按权益关联"
   ACCOUNT ||--o{ MESSAGE_LOG : "收发消息"
   MESSAGE_LOG ||--o{ MESSAGE_LINK : "多态关联"
+  SUPPORT_REQUEST ||--o{ MESSAGE_LINK : "工单消息（via entity_type）"
+  ORDER ||--o{ MESSAGE_LINK : "订单消息（via entity_type）"
 
   PRODUCT {
     uuid id PK
@@ -728,7 +730,7 @@ erDiagram
     <table>
       <tr><th>字段</th><th>类型</th><th>必填</th><th>说明 / 枚举值</th></tr>
       <tr><td><span class="pk">PK</span> id / <span class="fk">FK</span> message_id</td><td><code>uuid</code></td><td class="req">*</td><td>所属消息</td></tr>
-      <tr><td>entity_type / entity_id</td><td><code>string / uuid</code></td><td class="req">*</td><td>关联实体类型（order/invoice/support_request 等）/ 实体 ID</td></tr>
+      <tr><td>entity_type / entity_id</td><td><code>string / uuid</code></td><td class="req">*</td><td>关联实体类型 / 实体 ID。entity_type 枚举：<span class="enum">order</span> / <span class="enum">support_request</span> / <span class="enum">invoice</span> / <span class="enum">refund</span> / <span class="enum">subscription</span>（多态，不走 FK 约束，靠 entity_type 区分）</td></tr>
       <tr><td>linked_by</td><td><code>string</code></td><td></td><td>关联操作人</td></tr>
     </table>
 
