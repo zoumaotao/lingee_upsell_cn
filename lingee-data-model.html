@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>灵基 · 数据模型 v3（通用版）</title>
+<title>灵基 · 数据模型 v3（完整版）</title>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -53,15 +53,15 @@ td code{background:#F3F1FE;color:#4338CA;border-radius:4px;padding:1px 6px;font-
 </head>
 <body>
 <div class="wrap">
-  <h1>灵基 · 数据模型 v3（通用版）</h1>
+  <h1>灵基 · 数据模型 v3（完整版）</h1>
   <p class="lead">在 v2 海外版基础上补入通用功能（国内外均适用）：赠送规则配置、营销方案、协议版本管理；扩展 LEAD/POINT_LEDGER/CONSENT_LOG/FREE_TRIAL_REQUEST/AUDIT_LOG。<code>PK</code> 主键 <code>FK</code> 外键 <span class="req">*</span> 必填 <span class="enum">枚举值已穷举</span> <span class="badge b-new">v3 新增/修改</span></p>
 
   <!-- v2 → v3 变更清单 -->
   <div class="card">
-    <h2>0 · v2 → v3 变更清单 <span class="tag">通用版升级 · 完整对比</span></h2>
+    <h2>0 · v2 → v3 变更清单 <span class="tag">完整版升级 · 完整对比</span></h2>
     <div class="sub">以下变更均为通用功能，国内外版本共同适用。左列为 v2 原状，右列为 v3 变化（绿色 = 新增）。</div>
     <table>
-      <tr><th>维度</th><th>v2（海外版）</th><th>v3（通用版，新增/修改高亮）</th></tr>
+      <tr><th>维度</th><th>v2（海外版）</th><th>v3（完整版，新增/修改高亮）</th></tr>
       <tr><td>赠送规则</td><td>SKU 上硬编码 gift_points_per_seat_month 字段</td><td class="new-row">独立 GIFT_POINTS_RULE 实体，运营可动态修改，改后下周期生效，写 AUDIT_LOG</td></tr>
       <tr><td>营销方案</td><td>无</td><td class="new-row">新增 CAMPAIGN 实体，支持 grant_points/open_feature/send_message/discount_code 四种 action，三种触发方式（immediate/scheduled/event_driven）</td></tr>
       <tr><td>协议版本</td><td>CONSENT_LOG.doc_version（字符串）</td><td class="new-row">独立 AGREEMENT_VERSION 实体，SoT 灵基（元数据）+ 外链法务系统（正文）；CONSENT_LOG 精确 FK 引用；有绑定的版本永不可删</td></tr>
@@ -83,7 +83,7 @@ td code{background:#F3F1FE;color:#4338CA;border-radius:4px;padding:1px 6px;font-
 
   <!-- ER 图 -->
   <div class="card">
-    <h2>1 · 实体关系图 <span class="tag">v3 通用版</span> <span class="tag-new">含新增实体</span></h2>
+    <h2>1 · 实体关系图 <span class="tag">v3 完整版</span> <span class="tag-new">含新增实体</span></h2>
     <div class="sub">v3 新增：GIFT_POINTS_RULE（赠送规则）· CAMPAIGN（营销方案）· AGREEMENT_VERSION（协议版本管理）。CONSENT_LOG 新增与 AGREEMENT_VERSION 的关联。</div>
     <div class="mermaid">
 erDiagram
@@ -362,7 +362,7 @@ erDiagram
     </table>
 
     <div class="tname">FREE_TRIAL_REQUEST <span class="cn">· 试用申请</span> <span class="sot sot-l">SoT 灵基</span></div>
-    <div class="tdesc">访客在落地页提交邀请码试用表单时创建，或由销售从线索转入，或由运营人工新建。v3 新增通用留资字段（代注册用）及企业账号类型判断。</div>
+    <div class="tdesc">访客在落地页提交邀请码试用表单时创建，或由销售从线索转入，或由运营人工新建。v3 新增通用留资字段（代注册用）及企业账号类型判断。<b>TID 关联时机：试用开通前</b>——留资提交后 LBC 立即查金蝶云平台（以手机号查企业 TID），找到或代创建后绑定，确保 trial 租户从开通起就带 TID。</div>
     <table>
       <tr><th>字段</th><th>类型</th><th>必填</th><th>说明 / 枚举值</th></tr>
       <tr><td><span class="pk">PK</span> id</td><td><code>uuid</code></td><td></td><td>主键（申请号 TR-YYYYMMDD-xxxx）</td></tr>
@@ -427,7 +427,7 @@ erDiagram
       <tr><td>owner</td><td><code>string</code></td><td></td><td>客户负责人（销售/客户成功；自助客户可空）</td></tr>
       <tr><td colspan="4" style="background:#FAFAFE;font-weight:700;color:#475569">③ 映射（对账/续费/退款）</td></tr>
       <tr><td>stripe_customer_id</td><td><code>string</code></td><td></td><td>映射 Stripe Customer（海外版用）</td></tr>
-      <tr><td>kingdee_tid</td><td><code>string</code></td><td></td><td>金蝶 KBC/ERP 客户主数据标识（TID）。开通租户前必须对齐（防"线下新购+线上增购各开一个租户"）。prospect 阶段可空，开通前回填</td></tr>
+      <tr><td>kingdee_tid</td><td><code>string</code></td><td></td><td>金蝶 KBC/ERP 客户主数据标识（TID）。<b>关联时机：① 试用开通前</b>——落地页留资时 LBC 查金蝶云平台获取/创建，trial 租户从开通起就带 TID；<b>② 无试用直接新购开通前</b>——支付通过且风控/认证就绪后、调天梯→KDM 开通前必须就位。两种路径确保开通时 TID 已存在，防"线下新购+线上增购各开一个租户"的分裂问题。prospect 阶段（仅线索/意向）可空，开通前回填</td></tr>
       <tr><td>dedup_status</td><td><code>enum</code></td><td></td><td><span class="enum">matched</span>（已对齐 TID）/ <span class="enum">new</span>（KBC 新建）/ <span class="enum">manual_review</span>（模糊待人工）/ <span class="enum">pending</span>（KBC 未响应）</td></tr>
       <tr><td colspan="4" style="background:#FAFAFE;font-weight:700;color:#475569">④ 聚合视图（不存字段，关联查出）</td></tr>
       <tr><td><i>orders / subscriptions / invoices / points / usage / compliance</i></td><td><code>—</code></td><td></td><td>由关联实体查询拼成"客户 360"，不在 ACCOUNT 落字段</td></tr>
@@ -446,7 +446,7 @@ erDiagram
       <tr><td>order_no</td><td><code>string</code></td><td class="req">*</td><td>对外号 LG-OS-YYYYMMDD-xxxx</td></tr>
       <tr><td><span class="fk">FK</span> account_id / subscription_id</td><td><code>uuid</code></td><td class="req">*</td><td>所属客户 / 所属订阅</td></tr>
       <tr><td>order_type</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">new_business</span>（新购）/ <span class="enum">expansion</span>（增购：加席位/点数/升版）/ <span class="enum">renewal</span>（续费）/ <span class="enum">contraction</span>（减配）</td></tr>
-      <tr><td>status</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">pending_payment</span> / <span class="enum">under_review</span> / <span class="enum">provisioning</span> / <span class="enum">completed</span> / <span class="enum">rejected</span> / <span class="enum">activation_failed</span> / <span class="enum">cancelled</span> / <span class="enum">closed</span> / <span class="enum">refunded</span></td></tr>
+      <tr><td>status</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">pending_payment</span> / <span class="enum">under_review</span> / <span class="enum">provisioning</span> / <span class="enum">completed</span> / <span class="enum">rejected</span> / <span class="enum">activation_failed</span> / <span class="enum">cancelled</span> / <span class="enum">closed</span> / <span class="enum">refunded</span> / <span class="enum new-row">pending_activation</span>（已付款但企业认证未完成，认证后自动触发开通；国内版特有）</td></tr>
       <tr><td>compliance_status</td><td><code>enum</code></td><td></td><td><span class="enum">pending</span> / <span class="enum">pass</span> / <span class="enum">blocked</span></td></tr>
       <tr><td>close_reason</td><td><code>enum</code></td><td></td><td><span class="enum">null</span> / <span class="enum">expired</span> / <span class="enum">user_cancelled</span> / <span class="enum">rejected_compliance</span></td></tr>
       <tr><td>amount_subtotal</td><td><code>int</code></td><td class="req">*</td><td><span class="badge b-money">资金（分）</span> 税前合计（分）</td></tr>
@@ -541,17 +541,19 @@ erDiagram
       <tr><td>current_period_start / current_period_end</td><td><code>date</code></td><td class="req">*</td><td>当前计费周期</td></tr>
       <tr><td>term_end</td><td><code>date</code></td><td class="req">*</td><td>合同总到期（增购点数有效期上限）</td></tr>
       <tr><td>auto_renew</td><td><code>bool</code></td><td></td><td>是否自动续费（下单时默认开，客户可关闭）</td></tr>
+      <tr><td>past_due_grace_days</td><td><code>int</code></td><td></td><td>逾期宽限天数（默认 15 天，期间不停服，到期后进 expired）</td></tr>
+      <tr><td>past_due_since / expired_at / canceled_at</td><td><code>timestamp</code></td><td></td><td>进入逾期 / 过期 / 取消的时间（UTC）</td></tr>
     </table>
 
     <div class="tname">TENANT <span class="cn">· 租户</span> <span class="sot sot-l">SoT 灵基 KDM</span></div>
     <table>
       <tr><th>字段</th><th>类型</th><th>必填</th><th>说明 / 枚举值</th></tr>
       <tr><td><span class="pk">PK</span> id / <span class="fk">FK</span> subscription_id</td><td><code>uuid</code></td><td class="req">*</td><td>所属订阅</td></tr>
-      <tr><td>type</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">production</span> / <span class="enum">sandbox</span>（含从 trial 升级来的）</td></tr>
+      <tr><td>type</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">production</span> / <span class="enum">sandbox</span>（含从 trial 升级来的）/ <span class="enum">trial</span>（试用租户，到期冻结30天后升级为 sandbox 或 terminated；国内版扩展）</td></tr>
       <tr><td>url</td><td><code>string</code></td><td class="req">*</td><td>访问地址</td></tr>
       <tr><td>region</td><td><code>string</code></td><td class="req">*</td><td><span class="badge b-cmp">合规</span> 数据驻留区域（对客户明示）</td></tr>
       <tr><td>erp_connector</td><td><code>json</code></td><td></td><td>私有 ERP 连接（星瀚/星空）</td></tr>
-      <tr><td>status</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">provisioning</span> / <span class="enum">ready</span> / <span class="enum">suspended</span>（停用，可恢复）/ <span class="enum">grace_period</span>（退款后保留期，只读）/ <span class="enum">terminated</span>（已销毁）</td></tr>
+      <tr><td>status</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">provisioning</span> / <span class="enum">ready</span> / <span class="enum">trial_frozen</span>（试用到期冻结，登录打开订阅页，30天内可付费升级；到期后 terminated）/ <span class="enum"></span>suspended</span>（停用，可恢复）/ <span class="enum">grace_period</span>（正式订阅退款后保留期，30天只读）/ <span class="enum">terminated</span>（已销毁）</td></tr>
       <tr><td>grace_until / terminated_at</td><td><code>timestamp</code></td><td></td><td>保留期截止 / 实际销毁时间</td></tr>
     </table>
 
@@ -726,13 +728,31 @@ erDiagram
     </table>
 
     <div class="tname">APPROVAL <span class="cn">· 审批记录</span> <span class="sot sot-l">SoT 灵基</span></div>
+    <div class="tdesc">双人复核：审批人须不同于发起人（后端强制校验）。敏感操作（开通后退款、风控放行、协议发版等）需走此实体。</div>
     <table>
       <tr><th>字段</th><th>类型</th><th>必填</th><th>说明 / 枚举值</th></tr>
       <tr><td><span class="pk">PK</span> id</td><td><code>uuid</code></td><td></td><td>主键</td></tr>
-      <tr><td>target_type / target_id</td><td><code>string / uuid</code></td><td class="req">*</td><td>审批对象类型+ID（refund / compliance_check 等）</td></tr>
+      <tr><td>target_type / target_id</td><td><code>string / uuid</code></td><td class="req">*</td><td>审批对象类型+ID（refund / compliance_check / agreement_version 等）</td></tr>
+      <tr><td>requester / requested_at</td><td><code>string / timestamp</code></td><td class="req">*</td><td>发起人（邮箱）/ 发起时间（UTC）</td></tr>
+      <tr><td>status</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">pending</span>（等待审批）/ <span class="enum">approved</span>（通过）/ <span class="enum">rejected</span>（驳回）</td></tr>
       <tr><td>action</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">approve</span> / <span class="enum">reject</span></td></tr>
-      <tr><td>approver / approved_at / comment</td><td><code>string / timestamp / text</code></td><td class="req">*</td><td>审批人 / 时间 / 审批意见</td></tr>
+      <tr><td>approver / approved_at / comment</td><td><code>string / timestamp / text</code></td><td></td><td>审批人（须 ≠ requester）/ 时间 / 审批意见</td></tr>
     </table>
+
+    <div class="tname">THIRD_PARTY_ORDER <span class="cn">· 第三方订单镜像（KBC 透传）</span> <span class="sot sot-l">SoT 灵基（镜像）</span></div>
+    <div class="tdesc">SLG 链路中天梯开通完成后，LBC 从 KBC 拉取全量订单和许可信息，存为本地镜像。作用：LBC 续费/增购时不丢 KBC 侧权益，知道客户在 KBC 买了什么。只增不改，变化时追加新记录。</div>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>必填</th><th>说明 / 枚举值</th></tr>
+      <tr><td><span class="pk">PK</span> id</td><td><code>uuid</code></td><td></td><td>主键</td></tr>
+      <tr><td><span class="fk">FK</span> account_id</td><td><code>uuid</code></td><td class="req">*</td><td>关联客户（通过 TID 归并到 ACCOUNT）</td></tr>
+      <tr><td>kingdee_sn</td><td><code>string</code></td><td class="req">*</td><td>KBC 产品序列号（SN），主键关联标识</td></tr>
+      <tr><td>kbc_order_no</td><td><code>string</code></td><td class="req">*</td><td>KBC 侧单据号</td></tr>
+      <tr><td>product_code / edition</td><td><code>string</code></td><td class="req">*</td><td>产品编码 / 版本</td></tr>
+      <tr><td>seats / term_start / term_end</td><td><code>int / date / date</code></td><td class="req">*</td><td>席位数 / 服务期起止</td></tr>
+      <tr><td>entitlements</td><td><code>json</code></td><td></td><td>KBC 侧权益快照（许可点数/功能模块等）</td></tr>
+      <tr><td>synced_at / source</td><td><code>timestamp / enum</code></td><td class="req">*</td><td>同步时间 / <span class="enum">ladder_callback</span>（天梯开通回调后拉取）/ <span class="enum">manual_sync</span>（运营手动触发）</td></tr>
+    </table>
+    <div class="note"><b>同步触发时机：</b>天梯开通完成后回调 LBC，LBC 再主动从 KBC API 拉取全量订单信息。LBC 自助订单也反向推给 KBC（LBC→KBC 双向同步），确保双轨客户（PLG+SLG）权益不分裂。</div>
 
     <div class="tname">AUDIT_LOG <span class="cn">· 操作审计</span> <span class="sot sot-l">SoT 灵基</span></div>
     <div class="tdesc">全量留痕，只增不改不删。所有敏感操作均写此表。</div>
