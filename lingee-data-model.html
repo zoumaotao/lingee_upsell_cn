@@ -483,15 +483,16 @@ erDiagram
       <tr><td>attempt_no</td><td><code>int</code></td><td class="req">*</td><td>第几次尝试（一单可多次）</td></tr>
       <tr><td>channel</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">stripe</span>（海外版）/ <span class="enum">kingdee_pay</span>（国内版，金蝶云平台统一渠道）</td></tr>
       <tr><td>method</td><td><code>enum</code></td><td></td><td>海外版：<span class="enum">card</span> / <span class="enum">fpx</span> / <span class="enum">grabpay</span> / <span class="enum">applepay</span> / <span class="enum">googlepay</span> / <span class="enum">link</span><br>国内版：<span class="enum">alipay_enterprise</span>（企业支付宝）/ <span class="enum">bank_transfer</span>（对公银行转账）</td></tr>
-      <tr><td>card_brand / card_last4</td><td><code>string</code></td><td></td><td>Stripe 回传（不存完整卡号）</td></tr>
+      <tr><td>card_brand / card_last4</td><td><code>string</code></td><td></td><td>Stripe 回传（不存完整卡号）；<b>仅海外版</b>，国内版无卡支付</td></tr>
       <tr><td>amount_subtotal / tax_amount / amount_total</td><td><code>int</code></td><td></td><td><span class="badge b-money">资金（分）</span> 税前 / 税额 / 含税实付（分）</td></tr>
       <tr><td>currency</td><td><code>char(3)</code></td><td class="req">*</td><td>海外版 <span class="enum">USD</span>（presentment currency）；国内版 <span class="enum">CNY</span></td></tr>
-      <tr><td>settlement_gross / fee / settlement_net / settlement_currency / fx_rate</td><td><code>int / int / int / char(3) / decimal</code></td><td></td><td><span class="badge b-money">资金（分）</span> 结算 MYR 三口径：毛换汇 − Stripe 手续费 = 净到账 payout</td></tr>
+      <tr><td>settlement_gross / fee / settlement_net / settlement_currency / fx_rate</td><td><code>int / int / int / char(3) / decimal</code></td><td></td><td><span class="badge b-money">资金（分）</span> <b>仅海外版</b>：Stripe 结算 MYR 三口径（毛换汇 − 手续费 = 净到账 payout）；国内版无此字段（CNY 原币结算，无换汇）</td></tr>
       <tr><td>status</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">processing</span> / <span class="enum">succeeded</span> / <span class="enum">failed</span> / <span class="enum">canceled</span></td></tr>
-      <tr><td>failure_code / failure_reason</td><td><code>string</code></td><td></td><td>失败原因，来自 Stripe：<span class="enum">insufficient_funds</span> / <span class="enum">card_declined</span> / <span class="enum">expired_card</span> / <span class="enum">processing_error</span> / <span class="enum">authentication_required</span> 等</td></tr>
+      <tr><td>failure_code / failure_reason</td><td><code>string</code></td><td></td><td>失败原因。海外版来自 Stripe：<span class="enum">insufficient_funds</span> / <span class="enum">card_declined</span> / <span class="enum">expired_card</span> / <span class="enum">authentication_required</span> 等；国内版来自金蝶云平台：<span class="enum">notify_timeout</span>（回调超时）/ <span class="enum">amount_mismatch</span>（金额不符）/ <span class="enum">bank_rejected</span>（银行拒绝）/ <span class="enum">duplicate_notify</span>（重复回调，已幂等处理）</td></tr>
       <tr><td>refund_marker</td><td><code>enum</code></td><td></td><td><span class="enum">none</span> / <span class="enum">partially_refunded</span> / <span class="enum">refunded</span>（原流水不可改，退款另建 REFUND 记录）</td></tr>
       <tr><td>created_at / paid_at</td><td><code>timestamp</code></td><td class="req">*</td><td>发起时间 / 成功时间（UTC）</td></tr>
-      <tr><td>payout_id / reconciliation_status</td><td><code>string / enum</code></td><td></td><td>归属 Stripe 打款 / <span class="enum">matched</span>·<span class="enum">variance</span>·<span class="enum">unmatched</span></td></tr>
+      <tr><td>payout_id</td><td><code>string</code></td><td></td><td><b>仅海外版</b>：归属 Stripe 打款批次 ID；国内版无此概念（CNY 直接结算到账）</td></tr>
+      <tr><td>reconciliation_status</td><td><code>enum</code></td><td></td><td><span class="enum">matched</span>（对账一致）/ <span class="enum">variance</span>（有差异）/ <span class="enum">unmatched</span>（未匹配）；用于 LBC↔支付平台流水对账</td></tr>
     </table>
 
     <div class="tname">REFUND <span class="cn">· 退款（支付的子记录）</span> <span class="sot sot-s">SoT Stripe 镜像（海外）</span></div>
