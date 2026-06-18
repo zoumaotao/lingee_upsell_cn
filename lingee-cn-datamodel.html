@@ -91,7 +91,8 @@ td code{background:#F3F1FE;color:#4338CA;border-radius:4px;padding:1px 6px;font-
       <tr class="new-row"><td><span class="type-add">新增字段</span></td><td>客户域</td><td>ACCOUNT</td><td>新增 unified_social_credit_code（统一社会信用代码）、kingdee_tid（国内核心映射键）、tid_certification_status</td></tr>
       <tr class="diff-row"><td><span class="type-mod">修改字段</span></td><td>客户域</td><td>ACCOUNT</td><td>tax_status 改为增值税口径（vat_general/vat_small）；移除 stripe_customer_id</td></tr>
       <tr class="new-row"><td><span class="type-add">新增字段</span></td><td>销售域</td><td>FREE_TRIAL_REQUEST</td><td>新增 kingdee_cloud_tid、tid_certification_status、tid_linked_at；failure_reason 新增 tid_registration_failed</td></tr>
-      <tr class="diff-row"><td><span class="type-mod">新增枚举</span></td><td>订单域</td><td>ORDER</td><td>status 新增 pending_activation（已付款但企业认证未完成）；新增 authentication_snapshot(json) 字段</td></tr>
+      <tr class="diff-row"><td><span class="type-mod">新增枚举</span></td><td>订单域</td><td>ORDER.status</td><td>新增 pending_activation（已付款但企业认证未完成，认证后自动触发开通）</td></tr>
+      <tr class="new-row"><td><span class="type-add">新增字段</span></td><td>订单域</td><td>ORDER</td><td>authentication_snapshot（下单时企业认证状态快照，json）；kingdee_pay_order_id（国内版替代 stripe_checkout_session_id，金蝶云平台支付单 ID）</td></tr>
       <tr class="diff-row"><td><span class="type-rep">替换字段</span></td><td>订单域</td><td>PAYMENT</td><td>channel 改为 kingdee_pay；method 改为 alipay_enterprise/bank_transfer；stripe_payment_intent_id 改为 kingdee_notify_id（幂等键）；币种改 CNY；新增 reconciliation_status</td></tr>
       <tr class="diff-row"><td><span class="type-mod">修改字段</span></td><td>订单域</td><td>REFUND</td><td>新增 refund_method（alipay_reverse/bank_manual）、bank_account_info；reason 新增 pending_activation_refund；移除 stripe_refund_id</td></tr>
       <tr class="del-row"><td><span class="type-del">删除实体</span></td><td>订单域</td><td>DISPUTE</td><td>国内无 Chargeback 机制，删除此实体</td></tr>
