@@ -479,13 +479,13 @@ erDiagram
     <table>
       <tr><th>字段</th><th>类型</th><th>必填</th><th>说明 / 枚举值</th></tr>
       <tr><td><span class="pk">PK</span> id / <span class="fk">FK</span> order_id / account_id</td><td><code>uuid</code></td><td class="req">*</td><td>所属订单 / 购买方</td></tr>
-      <tr><td>stripe_payment_intent_id</td><td><code>string</code></td><td class="req">*</td><td>映射 Stripe PaymentIntent（对账主键，海外版）</td></tr>
+      <tr><td>stripe_payment_intent_id / kingdee_notify_id</td><td><code>string</code></td><td class="req">*</td><td><b>唯一约束（幂等去重主键）</b>：海外版用 stripe_payment_intent_id（映射 Stripe PaymentIntent）；国内版用 kingdee_notify_id（金蝶云平台 notify 唯一 ID）；两者互斥，按部署区域取其一</td></tr>
       <tr><td>attempt_no</td><td><code>int</code></td><td class="req">*</td><td>第几次尝试（一单可多次）</td></tr>
-      <tr><td>channel</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">stripe</span>（海外，当前唯一渠道）</td></tr>
-      <tr><td>method</td><td><code>enum</code></td><td></td><td><span class="enum">card</span> / <span class="enum">fpx</span> / <span class="enum">grabpay</span> / <span class="enum">applepay</span> / <span class="enum">googlepay</span> / <span class="enum">link</span></td></tr>
+      <tr><td>channel</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">stripe</span>（海外版）/ <span class="enum">kingdee_pay</span>（国内版，金蝶云平台统一渠道）</td></tr>
+      <tr><td>method</td><td><code>enum</code></td><td></td><td>海外版：<span class="enum">card</span> / <span class="enum">fpx</span> / <span class="enum">grabpay</span> / <span class="enum">applepay</span> / <span class="enum">googlepay</span> / <span class="enum">link</span><br>国内版：<span class="enum">alipay_enterprise</span>（企业支付宝）/ <span class="enum">bank_transfer</span>（对公银行转账）</td></tr>
       <tr><td>card_brand / card_last4</td><td><code>string</code></td><td></td><td>Stripe 回传（不存完整卡号）</td></tr>
       <tr><td>amount_subtotal / tax_amount / amount_total</td><td><code>int</code></td><td></td><td><span class="badge b-money">资金（分）</span> 税前 / 税额 / 含税实付（分）</td></tr>
-      <tr><td>currency</td><td><code>char(3)</code></td><td class="req">*</td><td><span class="enum">USD</span>（海外 presentment currency）</td></tr>
+      <tr><td>currency</td><td><code>char(3)</code></td><td class="req">*</td><td>海外版 <span class="enum">USD</span>（presentment currency）；国内版 <span class="enum">CNY</span></td></tr>
       <tr><td>settlement_gross / fee / settlement_net / settlement_currency / fx_rate</td><td><code>int / int / int / char(3) / decimal</code></td><td></td><td><span class="badge b-money">资金（分）</span> 结算 MYR 三口径：毛换汇 − Stripe 手续费 = 净到账 payout</td></tr>
       <tr><td>status</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">processing</span> / <span class="enum">succeeded</span> / <span class="enum">failed</span> / <span class="enum">canceled</span></td></tr>
       <tr><td>failure_code / failure_reason</td><td><code>string</code></td><td></td><td>失败原因，来自 Stripe：<span class="enum">insufficient_funds</span> / <span class="enum">card_declined</span> / <span class="enum">expired_card</span> / <span class="enum">processing_error</span> / <span class="enum">authentication_required</span> 等</td></tr>
