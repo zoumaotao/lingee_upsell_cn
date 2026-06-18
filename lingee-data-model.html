@@ -354,7 +354,7 @@ erDiagram
       <tr><td>source</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">website_contact</span>（官网询价）/ <span class="enum">in_product_contact</span>（产品内询价·PQL）/ <span class="enum">free_trial_signup</span>（申请试用）/ <span class="enum">volume</span> / <span class="enum">marketing</span> / <span class="enum">referral</span> / <span class="enum new-row">offline_event</span>（<span class="badge b-new">v3 新增</span> 线下活动）/ <span class="enum">existing_customer</span>（<span class="badge b-new">v3 新增</span> 存量/转介绍）</td></tr>
       <tr><td>contact_name / business_email / phone</td><td><code>string</code></td><td class="req">*</td><td>表单字段：姓名 / 工作邮箱 / 电话</td></tr>
       <tr><td>company_name / country_code</td><td><code>string</code></td><td class="req">*</td><td>公司名 / 国家</td></tr>
-      <tr><td>budget_amount / budget_currency</td><td><code>int / char(3)</code></td><td></td><td><span class="badge b-money">资金（分）</span> 预算（分）；币种默认 <span class="enum">USD</span>/年</td></tr>
+      <tr><td>budget_amount / budget_currency</td><td><code>int / char(3)</code></td><td></td><td><span class="badge b-money">资金（分）</span> 客户填写的预算（分）；币种由部署区域决定，不写死（国内版 <span class="enum">CNY</span>，海外版 <span class="enum">USD</span>）</td></tr>
       <tr><td>expected_seats</td><td><code>int</code></td><td></td><td>预期席位（Premium 起售 100）</td></tr>
       <tr><td>lead_score / score_band</td><td><code>int / enum</code></td><td></td><td>系统自动评分 0–100；<span class="enum">hot</span> / <span class="enum">warm</span> / <span class="enum">cold</span></td></tr>
       <tr><td>auto_recommendation</td><td><code>enum</code></td><td></td><td><span class="enum">recommend_qualify</span> / <span class="enum">needs_review</span> / <span class="enum">auto_disqualify</span></td></tr>

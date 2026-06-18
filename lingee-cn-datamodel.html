@@ -144,8 +144,14 @@ td code{background:#F3F1FE;color:#4338CA;border-radius:4px;padding:1px 6px;font-
 
   <!-- 销售域差异 -->
   <div class="card">
-    <h2>3 · 销售域（差异）<span class="tag-cn">FREE_TRIAL_REQUEST 扩展</span></h2>
-    <div class="sub">LEAD / OPPORTUNITY / CONTACT 与 v3 完全一致（LEAD 的 offline_event/existing_customer/pql_signal 已在 v3 通用版中）。FREE_TRIAL_REQUEST 新增 TID 相关字段。</div>
+    <h2>3 · 销售域（差异）<span class="tag-cn">FREE_TRIAL_REQUEST 扩展；LEAD.budget_currency 差异</span></h2>
+    <div class="sub">LEAD 国内版 budget_currency 默认 CNY（v3 完整版不写死，由区域决定）。OPPORTUNITY / CONTACT 与 v3 完全一致。FREE_TRIAL_REQUEST 新增 TID 相关字段。</div>
+
+    <div class="tname">LEAD <span class="cn">· 线索（国内差异字段）</span> <span class="sot sot-l">SoT 灵基</span></div>
+    <table>
+      <tr><th>字段</th><th>类型</th><th>说明（差异部分）</th></tr>
+      <tr class="diff-row"><td>budget_currency</td><td><code>char(3)</code></td><td><span class="badge b-cn">国内说明</span> 默认 <span class="enum">CNY</span>（人民币）；v3 完整版不写死，由部署区域决定</td></tr>
+    </table>
 
     <div class="tname">FREE_TRIAL_REQUEST <span class="cn">· 试用申请（国内差异字段）</span> <span class="sot sot-l">SoT 灵基</span></div>
     <div class="tdesc">v3 通用版已有 contact_name / phone / company_name / cloud_account_type。国内版在此基础上新增 TID 绑定字段。</div>
@@ -356,6 +362,7 @@ td code{background:#F3F1FE;color:#4338CA;border-radius:4px;padding:1px 6px;font-
     <table>
       <tr><th>实体/字段</th><th>v3 通用版</th><th>国内版（差异）</th></tr>
       <tr><td>SKU.currency</td><td>USD / CNY 均可</td><td class="diff-row">固定 <code>CNY</code>，list_price 以分（人民币）</td></tr>
+      <tr><td>LEAD.budget_currency</td><td>由部署区域决定，不写死</td><td class="diff-row">国内版默认 <code>CNY</code></td></tr>
       <tr><td>ACCOUNT 新增</td><td>—</td><td class="new-row">unified_social_credit_code / kingdee_tid（必须）/ tid_certification_status</td></tr>
       <tr><td>ACCOUNT.tax_status</td><td>domestic_sst / export_zero_rated</td><td class="diff-row">vat_general / vat_small（增值税口径）</td></tr>
       <tr><td>ACCOUNT.stripe_customer_id</td><td>有</td><td class="del-row">国内版删除</td></tr>
