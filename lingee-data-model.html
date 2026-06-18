@@ -317,10 +317,10 @@ erDiagram
       <tr><td>min_qty / step_qty</td><td><code>int</code></td><td></td><td>最小 / 步长：Pro 最小 5 席；点数最小 10000，步进 10000</td></tr>
       <tr><td>quote_notes_i18n</td><td><code>json</code></td><td></td><td>报价说明（面议或折扣用）</td></tr>
       <tr><td>dep_hard</td><td><code>json[]</code></td><td></td><td>强依赖（必须成立）：Units 需活跃订阅</td></tr>
-      <tr><td>dep_scenario_i18n</td><td><code>json[]</code></td><td></td><td>场景依赖（推荐，非强制）：交叉推荐用</td></tr>
-      <tr><td>sales_pitch_i18n</td><td><code>json</code></td><td></td><td>销售话术</td></tr>
-      <tr><td>product_intro_i18n</td><td><code>json</code></td><td></td><td>产品介绍（购买页展示卖点/功能文案）</td></tr>
-      <tr><td>delivery_notes_i18n</td><td><code>json</code></td><td></td><td>交付要点（给 KDM 开通的提示）</td></tr>
+      <tr><td>dep_scenario</td><td><code>json[]</code></td><td></td><td>场景依赖（推荐，非强制）：交叉推荐用</td></tr>
+      <tr><td>sales_pitch</td><td><code>text</code></td><td></td><td>销售话术（内部，仅销售/客服参考，不展示给客户）</td></tr>
+      <tr><td>product_intro_i18n</td><td><code>json</code></td><td></td><td>产品介绍（购买页展示卖点/功能文案，面向客户，需多语言）</td></tr>
+      <tr><td>delivery_notes</td><td><code>text</code></td><td></td><td>交付要点（内部，给 KDM 开通的提示，不展示给客户）</td></tr>
       <tr><td>stripe_price_id</td><td><code>string</code></td><td></td><td>映射 Stripe Price（海外版用；面议 SKU 可空）</td></tr>
       <tr><td>status</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">active</span> / <span class="enum">quote_based</span>（面议）/ <span class="enum">archived</span>（对新购隐藏、保留存量）</td></tr>
       <tr><td>content_version</td><td><code>int</code></td><td></td><td>内容版本号（改文案/价生成新版、可审计）</td></tr>
