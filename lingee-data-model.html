@@ -347,7 +347,7 @@ erDiagram
     <div class="sub">LEAD 新增 offline_event / existing_customer 来源枚举及 pql_signal PQL 评分字段；FREE_TRIAL_REQUEST 新增通用留资字段（contact_name/phone/company_name）及 cloud_account_type。</div>
 
     <div class="tname">LEAD <span class="cn">· 销售线索（未鉴定的兴趣）</span> <span class="sot sot-l">SoT 灵基（或对接 CRM）</span></div>
-    <div class="tdesc">承接 Premium「Contact Sales」表单与市场留资。<b>一条线索可能成交也可能是无效咨询</b>，先由销售跟进鉴定。</div>
+    <div class="tdesc">承接 Premium「Contact Sales」表单与市场留资。<b>一条线索可能成交也可能是无效咨询</b>，先由销售跟进鉴定。<b>去重规则：</b>新线索进来时，系统按 email 域名 / 公司名 / 企业信用代码查是否已有 ACCOUNT——有则 account_id 指向已有记录（归并），无则创建新 ACCOUNT，模糊匹配时进 dedup_status=manual_review 人工判断。</div>
     <table>
       <tr><th>字段</th><th>类型</th><th>必填</th><th>说明 / 枚举值</th></tr>
       <tr><td><span class="pk">PK</span> id</td><td><code>uuid</code></td><td></td><td>主键</td></tr>
@@ -361,7 +361,7 @@ erDiagram
       <tr class="new-row"><td>pql_signal</td><td><code>json</code></td><td></td><td><span class="badge b-new">v3 新增</span> PQL 信号快照：{points_consumed(int), ai_features_activated(int), frequency(string), aha_moment_reached(bool)}。用于 PQL 线索评分，记录线索来源时的产品行为信号</td></tr>
       <tr><td>status</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">new</span> / <span class="enum">contacted</span> / <span class="enum">qualified</span>（合格）/ <span class="enum">disqualified</span>（无效）</td></tr>
       <tr><td>qualified_by / qualified_at</td><td><code>string / timestamp</code></td><td></td><td>谁在何时鉴定合格</td></tr>
-      <tr><td>account_id / contact_id</td><td><code>uuid</code></td><td></td><td>归并到已有 ACCOUNT/CONTACT</td></tr>
+      <tr><td>account_id / contact_id</td><td><code>uuid</code></td><td></td><td>归并到已有 ACCOUNT/CONTACT（可空；去重规则见上方实体描述）</td></tr>
       <tr><td>owner / created_at</td><td><code>string / timestamp</code></td><td class="req">*</td><td>跟进销售 / 创建时间（UTC）</td></tr>
     </table>
 
@@ -370,7 +370,7 @@ erDiagram
     <table>
       <tr><th>字段</th><th>类型</th><th>必填</th><th>说明 / 枚举值</th></tr>
       <tr><td><span class="pk">PK</span> id</td><td><code>uuid</code></td><td></td><td>主键（申请号 TR-YYYYMMDD-xxxx）</td></tr>
-      <tr><td><span class="fk">FK</span> account_id / contact_id</td><td><code>uuid</code></td><td class="req">*</td><td>所属客户 / 联系人（按 email 归并到已有 ACCOUNT）</td></tr>
+      <tr><td><span class="fk">FK</span> account_id / contact_id</td><td><code>uuid</code></td><td class="req">*</td><td>所属客户 / 联系人（按 email 归并到已有 ACCOUNT；去重规则同 LEAD）</td></tr>
       <tr><td><span class="fk">FK</span> lead_id</td><td><code>uuid</code></td><td></td><td>关联线索（landing_page 来的自动关联，manual 来的可空）</td></tr>
       <tr><td>source</td><td><code>enum</code></td><td class="req">*</td><td><span class="enum">landing_page</span>（访客自助提交）/ <span class="enum">lead_referral</span>（销售转入）/ <span class="enum">manual</span>（运营后台新建）</td></tr>
       <tr class="new-row"><td>contact_name</td><td><code>string</code></td><td></td><td><span class="badge b-new">v3 新增</span> 留资联系人姓名（代注册企业账号时使用）</td></tr>
@@ -474,8 +474,8 @@ erDiagram
       <tr><td>line_subtotal</td><td><code>int</code></td><td class="req">*</td><td>行税前小计（分）</td></tr>
     </table>
 
-    <div class="tname">PAYMENT <span class="cn">· 支付流水（每条 = 一次支付尝试）</span> <span class="sot sot-s">SoT Stripe 镜像（海外）</span></div>
-    <div class="tdesc">本实体是 Stripe PaymentIntent 在我们这边的镜像（海外版）；一个订单可有多条 PAYMENT（失败重试），payment_failed 记在这，订单 status 仍 pending_payment。流水只增不改。</div>
+    <div class="tname">PAYMENT <span class="cn">· 支付流水（每条 = 一次支付尝试）</span> <span class="sot sot-s">SoT Stripe 镜像（海外）/ 金蝶云平台镜像（国内）</span></div>
+    <div class="tdesc">一个订单可有多条 PAYMENT（失败重试），payment_failed 记在这，订单 status 仍 pending_payment。流水只增不改。<br><b>海外版：</b>Stripe PaymentIntent 镜像，幂等键为 stripe_payment_intent_id，字段见下表。<br><b>国内版：</b>金蝶云平台 notify 回调镜像，stripe 相关字段全部替换，详见 <code>lingee-cn-datamodel.html</code> Section 4（channel → kingdee_pay；幂等键 → kingdee_notify_id；method → alipay_enterprise / bank_transfer；无卡信息字段）。</div>
     <table>
       <tr><th>字段</th><th>类型</th><th>必填</th><th>说明 / 枚举值</th></tr>
       <tr><td><span class="pk">PK</span> id / <span class="fk">FK</span> order_id / account_id</td><td><code>uuid</code></td><td class="req">*</td><td>所属订单 / 购买方</td></tr>
