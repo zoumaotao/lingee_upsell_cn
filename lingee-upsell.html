@@ -730,12 +730,11 @@ body{
               <div class="corp-value" style="color:var(--muted)">zh***@xin.com</div>
             </div>
           </div>
-          <div class="form-hint" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-            <span>企业信息来自金蝶云企业账号中心，如需变更请前往
-            <a href="https://account.kdcloud.com" class="text-link" target="_blank">金蝶云企业账号中心</a></span>
-            <button id="btn-refresh-corp" onclick="refreshCorpInfo()" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--indigo);background:#EEF2FF;border:1px solid #C7D2FE;border-radius:6px;padding:4px 10px;font-weight:600;cursor:pointer;border-style:solid;white-space:nowrap;flex-shrink:0">
-              <svg id="refresh-corp-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-              刷新认证状态
+          <div class="form-hint">
+            企业信息来自金蝶云企业账号中心，如需变更请前往
+            <a href="https://account.kdcloud.com" class="text-link" target="_blank">金蝶云企业账号中心</a>
+            <button id="btn-refresh-corp" onclick="refreshCorpInfo()" title="刷新认证状态" style="display:inline-flex;align-items:center;vertical-align:middle;background:none;border:none;cursor:pointer;padding:0 0 0 4px;color:var(--indigo);opacity:0.7;line-height:1">
+              <svg id="refresh-corp-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
             </button>
           </div>
         </div>
