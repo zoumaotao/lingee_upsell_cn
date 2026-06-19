@@ -726,9 +726,13 @@ body{
               <div class="corp-value" style="color:var(--muted)">zh***@xin.com</div>
             </div>
           </div>
-          <div class="form-hint">
-            企业信息来自金蝶云企业账号中心，如需变更请前往
-            <a href="https://account.kdcloud.com" class="text-link">金蝶云企业账号中心</a>
+          <div class="form-hint" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+            <span>企业信息来自金蝶云企业账号中心，如需变更请前往
+            <a href="https://account.kdcloud.com" class="text-link" target="_blank">金蝶云企业账号中心</a></span>
+            <button id="btn-refresh-corp" onclick="refreshCorpInfo()" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--indigo);background:#EEF2FF;border:1px solid #C7D2FE;border-radius:6px;padding:4px 10px;font-weight:600;cursor:pointer;border-style:solid;white-space:nowrap;flex-shrink:0">
+              <svg id="refresh-corp-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              刷新认证状态
+            </button>
           </div>
         </div>
 
@@ -1606,6 +1610,35 @@ function updateQRCountdown() {
   const s = String(qrSeconds % 60).padStart(2, '0');
   el.textContent = m + ':' + s;
 }
+
+// ── 企业认证信息刷新 ──────────────────────────────────────────
+// 实际生产：调用 LBC /api/corp-info?tid=xxx 拉金蝶云平台最新认证状态
+// 原型：模拟接口延迟后更新 DOM
+function refreshCorpInfo(silent) {
+  const icon = document.getElementById('refresh-corp-icon');
+  const btn  = document.getElementById('btn-refresh-corp');
+  if (icon) icon.style.animation = 'spin 0.8s linear infinite';
+  if (btn)  btn.disabled = true;
+
+  // 模拟 API 调用（生产替换为 fetch('/api/corp-info?tid=...')）
+  setTimeout(() => {
+    if (icon) icon.style.animation = '';
+    if (btn)  btn.disabled = false;
+    // 原型：认证状态保持不变，仅 toast 提示
+    if (!silent) showToast('认证状态已更新');
+  }, 900);
+}
+
+// visibilitychange：用户从外部（金蝶云账号中心）切回页面时自动重拉
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    // 仅在 Step 1（配置页）可见时才拉，避免在支付/完成页面多余触发
+    const step1 = document.getElementById('page-step1');
+    if (step1 && step1.classList.contains('active')) {
+      refreshCorpInfo(true); // silent=true，不弹 toast，无感刷新
+    }
+  }
+});
 
 function refreshQR() {
   const box = document.getElementById('qr-box');
