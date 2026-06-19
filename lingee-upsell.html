@@ -865,7 +865,7 @@ body{
               </div>
             </div>
             <div style="font-size:11.5px;color:var(--muted);height:20px;text-align:center"></div>
-            <button class="btn btn-primary btn-full" id="btn-bank-done" onclick="goPage('review')">
+            <button class="btn btn-primary btn-full" id="btn-bank-done" onclick="goPage('provisioning')">
               我已转账，提交确认
             </button>
           </div>
@@ -1418,7 +1418,7 @@ function updateStepper(active) {
 function showState(state) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-step4').classList.add('active');
-  ['pending','failed','review','provisioning','success','actfail','cancelled'].forEach(s => {
+  ['pending','failed','provisioning','success','actfail','cancelled'].forEach(s => {
     const el = document.getElementById('state-' + s);
     if (el) el.style.display = 'none';
   });
@@ -1459,7 +1459,7 @@ function showState(state) {
   const giftPts = seatQty > 0 ? seatQty * 500 : 0;
   const giftStr = giftPts > 0 ? '500 点 / 席 / 月（仅生产环境）' : '';
 
-  ['pending','failed','review','provisioning','success','actfail','cancelled'].forEach(prefix => {
+  ['pending','failed','provisioning','success','actfail','cancelled'].forEach(prefix => {
     const fields = {
       'order-num': orderNum,
       'order-time': orderTime,
@@ -1552,7 +1552,7 @@ function goPage(page) {
   if (page === 'step2') { goStep(2); return; }
   if (page === 'step3') { goStep(3); return; }
   // demo 状态页：如果当前没有任何配置，注入示例数据（3席+10万点）以演示完整效果
-  const demoStates = ['pending','failed','review','provisioning','success','actfail','cancelled'];
+  const demoStates = ['pending','failed','provisioning','success','actfail','cancelled'];
   if (demoStates.includes(page) && seatQty === 0 && pointsQty === 0) {
     seatQty = 3;
     pointsQty = 10;
@@ -1564,7 +1564,6 @@ function goPage(page) {
   }
   if (page === 'pending')      { updateStepper(4); showState('pending'); return; }
   if (page === 'failed')       { updateStepper(4); showState('failed'); return; }
-  if (page === 'review')       { updateStepper(4); showState('review'); return; }
   if (page === 'provisioning') { updateStepper(4); showState('provisioning'); return; }
   if (page === 'success')      { updateStepper(4); showState('success'); return; }
   if (page === 'actfail')      { updateStepper(4); showState('actfail'); return; }
